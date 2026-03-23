@@ -1,0 +1,213 @@
+/* Security.css */
+.security-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    animation: securityFadeIn 0.5s ease;
+}
+
+@keyframes securityFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.security-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.security-card h2 {
+    margin-bottom: 2rem;
+    color: var(--text-main);
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.security-back-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.security-back-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+}
+
+.security-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.security-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    gap: 1.25rem;
+}
+
+.security-list-item:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.security-list-item-icon {
+    width: 44px;
+    height: 44px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.security-list-item-content {
+    flex: 1;
+}
+
+.security-list-item-title {
+    display: block;
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+
+.security-list-item-desc {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.security-list-item-arrow {
+    color: #cbd5e1;
+}
+
+.security-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.security-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.security-section h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.security-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* Scoped to security-form to avoid conflict with other .form-group definitions */
+.security-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.security-form .form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.security-input {
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.security-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.security-submit-btn {
+    padding: 0.8rem;
+    border-radius: 12px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.security-submit-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.security-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.message.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.message.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}

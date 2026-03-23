@@ -1,0 +1,205 @@
+.create-group-modal {
+    max-width: 500px;
+    width: 95%;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+}
+
+.create-group-modal .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 0;
+}
+
+.create-group-modal .modal-body {
+    padding: 1.5rem;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 0;
+}
+
+.create-group-modal .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.text-primary {
+    color: #4f46e5;
+}
+
+/* Scoped to create-group-modal to avoid conflict with Auth.css, Security.css, Profile.css */
+.create-group-modal .form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.create-group-modal .form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.group-name-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.group-name-input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    outline: none;
+}
+
+.friends-selection-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.friends-selection-section label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.625rem 1rem 0.625rem 2.25rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background-color: #f8fafc;
+}
+
+.search-box input:focus {
+    background-color: white;
+    border-color: #4f46e5;
+    outline: none;
+}
+
+/* Renamed from .friends-list to .group-friends-list to avoid collision with other pages */
+.group-friends-list {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+.group-friends-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.group-friends-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.group-friends-list::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 3px;
+}
+
+/* Renamed from .friend-item to .group-friend-item */
+.group-friend-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.group-friend-item:last-child {
+    border-bottom: none;
+}
+
+.group-friend-item:hover {
+    background-color: #f8fafc;
+}
+
+.group-friend-item.selected {
+    background-color: #eff6ff;
+}
+
+/* Renamed from .friend-avatar to .group-friend-avatar */
+.group-friend-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.group-friend-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.selection-indicator {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background-color: #4f46e5;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* Renamed from .friend-info to .group-friend-info */
+.group-friend-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Renamed from .friend-name to .group-friend-name */
+.group-friend-name {
+    font-weight: 500;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+/* Renamed from .friend-username to .group-friend-username */
+.group-friend-username {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.loading-state,
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}

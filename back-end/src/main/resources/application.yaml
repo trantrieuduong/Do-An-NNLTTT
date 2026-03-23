@@ -1,0 +1,49 @@
+server:
+  port: 8686
+  servlet:
+    context-path: /
+
+app:
+  ffmpeg:
+    path: C:/Program Files/ffmpeg/bin/ffmpeg.exe # based on your device
+  front-end-domain: "http://localhost:5173,http://localhost:8080"
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/Okayji
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      moderation:
+        options:
+          model: omni-moderation-latest
+      base-url: https://api.openai.com
+
+jwt:
+  signerKey: ${JWT_SIGNER_KEY}
+  accessTokenTime: 1 # day
+  accessTokenTimeWithRemember: 14 # day
+
+aws:
+  region: ap-southeast-1
+  s3:
+    bucket-name: okayji
+  credentials:
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+presigned-url:
+  expiration-minutes: 10
+multipart-url:
+  expiration-minutes: 60
+file:
+  max-size: # mb
+    image: 5
+    video: 50
+    multipart: 512
+    other: 50

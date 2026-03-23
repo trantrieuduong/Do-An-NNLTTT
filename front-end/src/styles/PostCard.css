@@ -1,0 +1,282 @@
+/* ══════════════════════════════════════════════════════
+   PostCard.css — shared post card styles (Home + Profile)
+   ══════════════════════════════════════════════════════ */
+
+/* ── Card wrapper ───────────────────────────────────── */
+.post-card-shared {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-card-shared:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-color: #e2e8f0;
+}
+
+/* ── Author row ─────────────────────────────────────── */
+.post-card-author {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.post-card-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    transition: border-color 0.2s;
+}
+
+.post-card-avatar:hover {
+    border-color: #4f46e5;
+}
+
+.post-card-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.post-card-author-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 0.1rem;
+}
+
+.post-card-author-top {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.post-card-fullname {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #0f172a;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+
+.post-card-fullname:hover {
+    color: #4f46e5;
+}
+
+.post-card-username {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+.post-card-time {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+/* Meta row: time + visibility badge */
+.post-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+/* Post status badge (PENDING / UNDER_REVIEW / REJECTED) */
+.post-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 20px;
+    line-height: 1.6;
+    flex-shrink: 0;
+}
+
+.post-card-status--pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.post-card-status--under_review {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.post-card-status--rejected {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+/* Delete button (profile only) */
+.post-card-delete-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.post-card-delete-btn:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* ── Content ────────────────────────────────────────── */
+.post-card-content {
+    font-size: 0.975rem;
+    line-height: 1.65;
+    color: #334155;
+    margin: 0 0 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ── Media grid ─────────────────────────────────────── */
+.post-card-media {
+    display: grid;
+    gap: 4px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+/* Grid column layout by count */
+.post-card-media--1 {
+    grid-template-columns: 1fr;
+}
+
+.post-card-media--2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.post-card-media--3 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.post-card-media--4 {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* First item in 3-media spans full width */
+.post-card-media--3 .post-card-media-item:first-child {
+    grid-column: 1 / -1;
+}
+
+.post-card-media-item {
+    position: relative;
+    overflow: hidden;
+    background: #f1f5f9;
+    aspect-ratio: 1;
+}
+
+.post-card-media-item--single {
+    aspect-ratio: unset;
+}
+
+.post-card-media-item img,
+.post-card-media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.post-card-media-item--single img,
+.post-card-media-item--single video {
+    max-height: 520px;
+    object-fit: contain;
+    background: #0f172a;
+}
+
+.post-card-media-item:hover img,
+.post-card-media-item:hover video {
+    transform: scale(1.02);
+}
+
+/* "+N" overlay */
+.post-card-media-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* ── Footer: actions ────────────────────────────────── */
+.post-card-footer {
+    display: flex;
+    gap: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.post-card-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.post-card-action-btn:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+/* Like active */
+.post-card-like-btn--active {
+    color: #ef4444 !important;
+}
+
+.post-card-like-btn--active:hover {
+    background: rgba(239, 68, 68, 0.06) !important;
+    color: #dc2626 !important;
+}
+
+.post-card-comment-btn:hover {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 640px) {
+    .post-card-shared {
+        border-radius: 12px;
+        padding: 1.25rem;
+    }
+}
