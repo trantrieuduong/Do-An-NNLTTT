@@ -60,7 +60,7 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = chatRepository.findByDirectKey(directKey);
 
         if (Objects.isNull(chat)) {
-            if (!friendRepository.existsByUserLow_IdAndUserHigh_Id(pairUser.getLow().getId(),
+            if (!friendRepository.existsByUserLowIdAndUserHighId(pairUser.getLow().getId(),
                     pairUser.getHigh().getId()))
                 throw new AppException(AppError.NOT_FRIEND);
 
@@ -92,7 +92,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public void leaveGroupChat(String userId, String groupId) {
-        ChatMember member = chatMemberRepository.findByChat_IdAndMember_Id(groupId, userId)
+        ChatMember member = chatMemberRepository.findByChatIdAndMemberId(groupId, userId)
                 .orElseThrow(() -> new AppException(AppError.CHAT_NOT_FOUND));
 
         if (member.getChat().getType() != ChatType.GROUP)
@@ -138,7 +138,7 @@ public class ChatServiceImpl implements ChatService {
                     .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
 
             PairUser pairUser = PairUser.canonical(user, other);
-            if (!friendRepository.existsByUserLow_IdAndUserHigh_Id(
+            if (!friendRepository.existsByUserLowIdAndUserHighId(
                     pairUser.getLow().getId(),
                     pairUser.getHigh().getId()))
                 throw new AppException(AppError.NOT_FRIEND);
@@ -202,19 +202,10 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ChatMemberResponse> getMembers(String chatId) {
-        return chatMemberRepository.findChatMembersByChat_Id(chatId).stream()
+        return chatMemberRepository.findChatMembersByChatId(chatId).stream()
                 .map(chatMapper::toChatMemberResponse)
                 .toList();
     }
-
-//    @Override
-//    public Page<MessageResponse> getMessages(String chatId, int page, int size) {
-//        Sort sort = Sort.by(Sort.Direction.DESC, "seq");
-//        Pageable pageable = PageRequest.of(page, size, sort);
-//
-//        return messageRepository.findByChatId(chatId, pageable)
-//                .map(messageMapper::toMessageResponse);
-//    }
 
     @Override
     public ListMessageResponse getMessages(String chatId, int limit, Long cursorSeq) {

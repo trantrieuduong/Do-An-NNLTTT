@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Collection;
 
 public interface PostRepository extends JpaRepository<Post,String> {
-    Page<Post> findByUser_Id(String userId, Pageable pageable);
+    Page<Post> findByUserId(String userId, Pageable pageable);
 
     @Query("""
         select p
@@ -20,7 +20,7 @@ public interface PostRepository extends JpaRepository<Post,String> {
         where p.user.id = :userId
         and p.status = com.okayji.feed.entity.PostStatus.PUBLISHED
     """)
-    Page<Post> findPublishedPostsByUser_Id(@Param("userId") String userId, Pageable pageable);
+    Page<Post> findPublishedPostsByUserId(@Param("userId") String userId, Pageable pageable);
 
     @Query("""
         select p
