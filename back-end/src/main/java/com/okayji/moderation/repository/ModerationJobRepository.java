@@ -2,7 +2,9 @@ package com.okayji.moderation.repository;
 
 import com.okayji.moderation.entity.ModerationJob;
 import com.okayji.moderation.entity.ModerationJobStatus;
+import com.okayji.moderation.entity.TargetType;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -11,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ModerationJobRepository extends JpaRepository<ModerationJob,Long> {
 
@@ -31,4 +34,6 @@ public interface ModerationJobRepository extends JpaRepository<ModerationJob,Lon
     """)
     int requeueProcessingJobs(@Param("processing") ModerationJobStatus processing,
                               @Param("pending") ModerationJobStatus pending);
+
+    long countByTargetType(TargetType targetType);
 }
