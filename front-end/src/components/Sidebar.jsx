@@ -2,15 +2,18 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, MessageCircle, Users, User, ShieldCheck, LogOut } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
+import { useNotification } from '../context/NotificationContext';
 import NotificationPanel from './notification/NotificationPanel';
 import '../styles/Layout.css';
 
 const Sidebar = () => {
     const navigate = useNavigate();
     const { unreadCount, disconnect } = useChat();
+    const { clearNotifications } = useNotification();
 
     const handleLogout = () => {
         disconnect();
+        clearNotifications();
         localStorage.removeItem('token');
         navigate('/login');
     };

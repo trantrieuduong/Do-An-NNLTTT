@@ -14,8 +14,11 @@ import com.okayji.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j(topic = "MODERATION-ORCHESTRATOR")
@@ -29,12 +32,17 @@ public class ModerationOrchestratorImpl implements ModerationOrchestrator {
     private final CommentRepository commentRepository;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processPost(ModerationJob job) {
         String postId = job.getTargetId();
         log.info("Received Post Moderation with post id={}", postId);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+        Optional<Post> optPost = postRepository.findById(postId);
+        if (optPost.isEmpty()) {
+            log.info("Post was deleted before moderation could run: {}", postId);
+            return;
+        }
+        Post post = optPost.get();
         boolean reject = false;
 
         // TEXT
@@ -91,12 +99,17 @@ public class ModerationOrchestratorImpl implements ModerationOrchestrator {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processComment(ModerationJob job) {
         String commentId = job.getTargetId();
         log.info("Received Comment Moderation with comment id={}", commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
+        Optional<Comment> optComment = commentRepository.findById(commentId);
+        if (optComment.isEmpty()) {
+            log.info("Comment was deleted before moderation could run: {}", commentId);
+            return;
+        }
+        Comment comment = optComment.get();
 
         if (comment.getContent() != null && !comment.getContent().isBlank()) {
             ModerationVerdict verdict = moderationService.moderateText(comment.getContent());
@@ -118,7 +131,7 @@ public class ModerationOrchestratorImpl implements ModerationOrchestrator {
         List<ModerationResult> moderationResults = job.getModerationResults();
         boolean review = false;
 
-        for (ModerationResult m :  moderationResults) {
+        for (ModerationResult m : moderationResults) {
             if (m.getDecision().equals(ModerationDecision.BLOCK))
                 return PostStatus.REJECTED;
             if (m.getDecision().equals(ModerationDecision.REVIEW))

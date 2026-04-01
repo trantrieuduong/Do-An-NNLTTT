@@ -71,6 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .filter(authority -> authority.startsWith("ROLE_")).toList();
 
         return AuthenticationResponse.builder()
+                .roles(user.getRoles().stream().map(role -> role.getName().toString()).toList())
                 .accessToken(jwtService.generateAccessToken(
                         user.getId(),
                         user.getUsername(),

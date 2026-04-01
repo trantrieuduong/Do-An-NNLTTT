@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, UserPlus, Github, Chrome, Calendar, AlertCircle, Loader2, Users } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, Calendar, AlertCircle, Loader2, Users } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../api/authService';
 import '../styles/Auth.css';
@@ -180,19 +180,6 @@ const Register = () => {
                         {loading ? 'Creating Account...' : 'Create Account'}
                     </button>
                 </form>
-
-                <div className="social-login">
-                    <div className="divider">Or register with</div>
-                    <div className="social-buttons">
-                        <button className="social-btn">
-                            <Chrome size={20} />
-                        </button>
-                        <button className="social-btn">
-                            <Github size={20} />
-                        </button>
-                    </div>
-                </div>
-
                 <div className="auth-footer">
                     Already have an account? <Link to="/login">Sign In</Link>
                 </div>

@@ -33,12 +33,12 @@ export const NotificationProvider = ({ children, stompClient, isConnected }) => 
         }
     }, []);
 
-    // Initial unread count fetch when user is logged in
+    // Initial unread count fetch when user is logged in or token changes
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) return;
         fetchUnreadCount();
-    }, [fetchUnreadCount]);
+    }, [fetchUnreadCount, localStorage.getItem('token')]);
 
     // Subscribe to WebSocket /user/queue/notification when stompClient is ready
     useEffect(() => {
@@ -121,6 +121,13 @@ export const NotificationProvider = ({ children, stompClient, isConnected }) => 
         }
     }, []);
 
+    const clearNotifications = useCallback(() => {
+        setNotifications([]);
+        setUnreadCount(0);
+        setPage(0);
+        setHasMore(true);
+    }, []);
+
     const value = {
         notifications,
         unreadCount,
@@ -130,6 +137,7 @@ export const NotificationProvider = ({ children, stompClient, isConnected }) => 
         markAsRead,
         markAllAsRead,
         fetchUnreadCount,
+        clearNotifications,
     };
 
     return (

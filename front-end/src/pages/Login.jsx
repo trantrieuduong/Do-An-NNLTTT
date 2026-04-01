@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { User, Lock, LogIn, Github, Chrome, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Lock, LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useChat } from '../context/ChatContext';
 import { authService } from '../api/authService';
+import { useChat } from '../context/ChatContext';
+import { useNotification } from '../context/NotificationContext';
 import '../styles/Auth.css';
 
 const Login = () => {
@@ -10,11 +11,12 @@ const Login = () => {
         username: '',
         password: ''
     });
-    const { connect } = useChat();
     const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { connect, refreshUnreadCount } = useChat();
+    const { fetchUnreadCount, loadNotifications } = useNotification();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,12 +33,17 @@ const Login = () => {
                 ...formData,
                 rememberMe: rememberMe
             });
-            console.log('Login success:', response);
             if (response.data && response.data.accessToken) {
-                // Connect to chat after successful login
                 connect(response.data.accessToken);
+                refreshUnreadCount();
+                fetchUnreadCount();
+                loadNotifications(true);
+                if (response.data.roles && response.data.roles.includes('ADMIN')) {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             }
-            navigate('/');
         } catch (err) {
             setError(err.message || 'Failed to login. Please check your credentials.');
         } finally {
@@ -109,9 +116,6 @@ const Login = () => {
                             />
                             <span>Remember me</span>
                         </label>
-                        <Link to="/forgot-password" style={{ color: 'var(--primary)', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
-                            Forgot password?
-                        </Link>
                     </div>
 
                     <button type="submit" className="auth-button" disabled={loading}>
@@ -119,19 +123,6 @@ const Login = () => {
                         {loading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
-
-                <div className="social-login">
-                    <div className="divider">Or continue with</div>
-                    <div className="social-buttons">
-                        <button className="social-btn">
-                            <Chrome size={20} />
-                        </button>
-                        <button className="social-btn">
-                            <Github size={20} />
-                        </button>
-                    </div>
-                </div>
-
                 <div className="auth-footer">
                     Don't have an account? <Link to="/register">Sign Up</Link>
                 </div>
