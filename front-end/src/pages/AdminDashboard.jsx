@@ -71,7 +71,7 @@ const AdminDashboard = () => {
                             style={{ padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', outline: 'none' }}
                         >
                             {availableYears.map(year => (
-                                <option key={year} value={year}>Năm {year}</option>
+                                <option key={year} value={year}>Year: {year}</option>
                             ))}
                         </select>
                     </div>

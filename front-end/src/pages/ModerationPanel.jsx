@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import { adminService } from "../api/adminService";
 import toast from "react-hot-toast";
 import "../styles/Admin.css";
+import {
+  Image,
+  Video,
+  Users,
+  FileText,
+  Clock,
+  FileWarning,
+} from "lucide-react";
 
 const ModerationPanel = () => {
   const [posts, setPosts] = useState([]);
@@ -63,6 +71,18 @@ const ModerationPanel = () => {
     );
   }
 
+  const getMediaCounts = (mediaList) => {
+    if (!mediaList) return { images: 0, videos: 0 };
+    return mediaList.reduce(
+      (acc, media) => {
+        if (media.type === "IMAGE") acc.images++;
+        if (media.type === "VIDEO") acc.videos++;
+        return acc;
+      },
+      { images: 0, videos: 0 },
+    );
+  };
+
   return (
     <div className="moderation-panel">
       <div className="panel-header">
@@ -93,108 +113,139 @@ const ModerationPanel = () => {
         </div>
       ) : (
         <div className="job-list">
-          {posts.map((post) => (
-            <div
-              key={post.id}
-              className={`job-card job-status-${post.status.toLowerCase()}`}
-            >
+          {posts.map((post) => {
+            const mediaCounts = getMediaCounts(post.postMedia);
+            return (
               <div
-                className="job-header"
-                onClick={() => toggleExpanded(post.id)}
+                key={post.id}
+                className={`job-card job-status-${post.status.toLowerCase()}`}
               >
-                <div className="job-info">
-                  <span className="job-type badge">POST</span>
-                  <span
-                    className={`job-status badge status-${post.status.toLowerCase()}`}
-                  >
-                    {post.status}
-                  </span>
-                  <span className="job-date">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="job-toggle">
-                  {expandedPostId === post.id ? "▼" : "▶"}
-                </div>
-              </div>
-
-              {expandedPostId === post.id && (
-                <div className="job-details">
-                  <div className="author-section">
-                    <img
-                      src={post.authorAvatarUrl || "/default-avatar.png"}
-                      alt={post.authorName}
-                      className="author-avatar"
-                    />
-                    <div className="author-info">
-                      <span className="author-name">{post.authorName}</span>
-                      <span className="author-id">ID: {post.authorId}</span>
-                    </div>
-                  </div>
-
-                  <div className="content-section">
-                    <h4>Content:</h4>
-                    <p className="content-text">{post.content}</p>
-
-                    {post.postMedia && post.postMedia.length > 0 && (
-                      <div className="admin-media-container">
-                        {post.postMedia.map((media, index) => (
-                          <div key={index} className="admin-media-item">
-                            {media.type === "IMAGE" ? (
-                              <img
-                                src={media.mediaUrl}
-                                alt="Post media"
-                                className="moderation-img"
-                                onClick={() =>
-                                  window.open(media.mediaUrl, "_blank")
-                                } // Click để xem ảnh to
-                              />
-                            ) : (
-                              <video
-                                src={media.mediaUrl}
-                                controls
-                                className="moderation-video"
-                              />
-                            )}
-                          </div>
-                        ))}
+                <div
+                  className="job-header"
+                  onClick={() => toggleExpanded(post.id)}
+                >
+                  <div className="job-info">
+                    <span className="job-type badge">POST</span>
+                    <span className="author-tag-wrapper">
+                      <Users size={16} />
+                      <span className="author-tag">@{post.authorName}</span>
+                    </span>
+                    <span
+                      className={`job-status badge status-${post.status.toLowerCase()}`}
+                    >
+                      {post.status}
+                    </span>
+                    {(mediaCounts.images > 0 || mediaCounts.videos > 0) && (
+                      <div className="media-stats-row">
+                        {mediaCounts.images > 0 && (
+                          <span className="stat-badge">
+                            <Image size={16} /> {mediaCounts.images}
+                          </span>
+                        )}
+                        {mediaCounts.videos > 0 && (
+                          <span className="stat-badge">
+                            <Video size={16} /> {mediaCounts.videos}
+                          </span>
+                        )}
                       </div>
                     )}
+                    <span className="char-count-row">
+                      <FileText size={16} /> {post.content.length} chars
+                    </span>
+                    <span className="job-date-row">
+                      <Clock size={16} />
+                      {new Date(post.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      - {new Date(post.createdAt).toLocaleDateString()}
+                    </span>
                   </div>
-
-                  {post.status !== "PUBLISHED" && (
-                    <button
-                      className="btn btn-approve"
-                      onClick={() => handleDecision(post.id, "PUBLISHED")}
-                      disabled={processingPostId === post.id}
-                    >
-                      {processingPostId === post.id ? "..." : "Approve"}
-                    </button>
-                  )}
-
-                  {post.status !== "UNDER_REVIEW" && (
-                    <button
-                      className="btn btn-review"
-                      onClick={() => handleDecision(post.id, "UNDER_REVIEW")}
-                      disabled={processingPostId === post.id}
-                    >
-                      {processingPostId === post.id ? "..." : "Send to Review"}
-                    </button>
-                  )}
-
-                  {post.status !== "REJECTED" && (
-                    <button
-                      className="btn btn-block"
-                      onClick={() => handleDecision(post.id, "REJECTED")}
-                      disabled={processingPostId === post.id}
-                    >
-                      {processingPostId === post.id ? "..." : "Reject"}
-                    </button>
-                  )}
+                  <div className="job-toggle">
+                    {expandedPostId === post.id ? "▼" : "▶"}
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {expandedPostId === post.id && (
+                  <div className="job-details">
+                    <div className="author-section">
+                      <img
+                        src={post.authorAvatarUrl || "/default-avatar.png"}
+                        alt={post.authorName}
+                        className="author-avatar"
+                      />
+                      <div className="author-info">
+                        <span className="author-name">{post.authorName}</span>
+                        <span className="author-id">ID: {post.authorId}</span>
+                      </div>
+                    </div>
+
+                    <div className="content-section">
+                      <h4>Content:</h4>
+                      <p className="content-text">{post.content}</p>
+
+                      {post.postMedia && post.postMedia.length > 0 && (
+                        <div className="admin-media-container">
+                          {post.postMedia.map((media, index) => (
+                            <div key={index} className="admin-media-item">
+                              {media.type === "IMAGE" ? (
+                                <img
+                                  src={media.mediaUrl}
+                                  alt="Post media"
+                                  className="moderation-img"
+                                  onClick={() =>
+                                    window.open(media.mediaUrl, "_blank")
+                                  } // Click để xem ảnh to
+                                />
+                              ) : (
+                                <video
+                                  src={media.mediaUrl}
+                                  controls
+                                  className="moderation-video"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {post.status !== "PUBLISHED" && (
+                      <button
+                        className="btn btn-approve"
+                        onClick={() => handleDecision(post.id, "PUBLISHED")}
+                        disabled={processingPostId === post.id}
+                      >
+                        {processingPostId === post.id ? "..." : "Approve"}
+                      </button>
+                    )}
+
+                    {post.status !== "UNDER_REVIEW" && (
+                      <button
+                        className="btn btn-review"
+                        onClick={() => handleDecision(post.id, "UNDER_REVIEW")}
+                        disabled={processingPostId === post.id}
+                      >
+                        {processingPostId === post.id
+                          ? "..."
+                          : "Send to Review"}
+                      </button>
+                    )}
+
+                    {post.status !== "REJECTED" && (
+                      <button
+                        className="btn btn-block"
+                        onClick={() => handleDecision(post.id, "REJECTED")}
+                        disabled={processingPostId === post.id}
+                      >
+                        {processingPostId === post.id ? "..." : "Reject"}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
