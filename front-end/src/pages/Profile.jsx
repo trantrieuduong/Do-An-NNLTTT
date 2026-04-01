@@ -66,7 +66,7 @@ const Profile = () => {
         birthday: '',
         avatarUrl: '',
         coverImageUrl: '',
-        profileVisibility: 'PUBLIC'
+        visibility: 'PUBLIC'
     });
 
 
@@ -108,7 +108,7 @@ const Profile = () => {
                 birthday: profileData.birthday || '',
                 avatarUrl: profileData.avatarUrl || '',
                 coverImageUrl: profileData.coverImageUrl || '',
-                profileVisibility: profileData.profileVisibility || 'PUBLIC'
+                visibility: profileData.visibility || 'PUBLIC'
             });
         } catch (error) {
             console.error("Error loading profile:", error);
@@ -350,8 +350,8 @@ const Profile = () => {
                         <div className="form-group">
                             <label>Profile Visibility</label>
                             <select
-                                value={editForm.profileVisibility}
-                                onChange={(e) => setEditForm({ ...editForm, profileVisibility: e.target.value })}
+                                value={editForm.visibility}
+                                onChange={(e) => setEditForm({ ...editForm, visibility: e.target.value })}
                                 style={{ padding: '0.5rem', borderRadius: '6px', border: '1px solid #cbd5e1', width: '100%' }}
                             >
                                 <option value="PUBLIC">Everyone can see your posts</option>
