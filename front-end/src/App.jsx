@@ -13,6 +13,7 @@ import Chat from './pages/Chat';
 import Friends from './pages/Friends';
 import PostDetail from './pages/PostDetail';
 import Security from './pages/Security';
+import Admin from './pages/Admin';
 
 // Protected route: redirect to /login if no token
 const PrivateRoute = ({ children }) => {
@@ -47,6 +48,7 @@ const InnerApp = () => {
                     <Route path="/profile/:userId" element={<PrivateRoute><Profile /></PrivateRoute>} />
                     <Route path="/post/:postId" element={<PrivateRoute><PostDetail /></PrivateRoute>} />
                     <Route path="/security" element={<PrivateRoute><Security /></PrivateRoute>} />
+                    <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
 
                     {/* Fallback */}
                     <Route path="*" element={<Navigate to="/" replace />} />

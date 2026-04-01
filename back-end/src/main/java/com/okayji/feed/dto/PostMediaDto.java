@@ -2,13 +2,13 @@ package com.okayji.feed.dto;
 
 import com.okayji.feed.entity.PostMediaType;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostMediaDto {
     @NotBlank(message = "Media type must not be blank")

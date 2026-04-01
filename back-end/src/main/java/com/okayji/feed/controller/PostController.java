@@ -31,8 +31,9 @@ public class PostController {
     @GetMapping("/{postId}")
     @Operation(summary = "Get post by postId")
     @PreAuthorize("@permissionCheck.canViewPost(#currentUser.id, #postId)")
-    ApiResponse<PostResponse> getPost(@PathVariable String postId,
-                                      @CurrentUser User currentUser) {
+    ApiResponse<PostResponse> getPost(
+            @PathVariable String postId,
+            @CurrentUser User currentUser) {
         return ApiResponse.<PostResponse>builder()
                 .success(true)
                 .message("Get post success")
@@ -43,9 +44,10 @@ public class PostController {
     @PutMapping("/{postId}")
     @Operation(summary = "Update post by postId")
     @PreAuthorize("@permissionCheck.canAlterPost(#currentUser.id, #postId)")
-    ApiResponse<PostResponse> updatePost(@PathVariable String postId,
-                                         @Valid @RequestBody PostUpdateRequest postUpdateRequest,
-                                         @CurrentUser User currentUser) {
+    ApiResponse<PostResponse> updatePost(
+            @PathVariable String postId,
+            @Valid @RequestBody PostUpdateRequest postUpdateRequest,
+            @CurrentUser User currentUser) {
         return ApiResponse.<PostResponse>builder()
                 .success(true)
                 .message("Update post success")
