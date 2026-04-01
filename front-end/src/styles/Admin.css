@@ -27,7 +27,7 @@
     gap: 8px;
 }
 
-.nav-item {
+.admin-nav-item {
     padding: 12px 16px;
     border: none;
     background-color: transparent;
@@ -40,12 +40,12 @@
     text-align: left;
 }
 
-.nav-item:hover {
+.admin-nav-item:hover {
     background-color: #34495e;
     color: white;
 }
 
-.nav-item.active {
+.admin-nav-item.active {
     background-color: #3498db;
     color: white;
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);

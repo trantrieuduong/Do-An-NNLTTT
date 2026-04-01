@@ -14,13 +14,13 @@ const Admin = () => {
                 <h2>Admin Panel</h2>
                 <nav className="admin-nav">
                     <button 
-                        className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+                        className={`admin-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
                         onClick={() => setActiveTab('dashboard')}
                     >
                         <LayoutDashboard size={20} /> Dashboard
                     </button>
                     <button 
-                        className={`nav-item ${activeTab === 'moderation' ? 'active' : ''}`}
+                        className={`admin-nav-item ${activeTab === 'moderation' ? 'active' : ''}`}
                         onClick={() => setActiveTab('moderation')}
                     >
                         <ShieldCheck size={20} /> Post Moderation
