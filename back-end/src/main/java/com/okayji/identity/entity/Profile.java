@@ -38,5 +38,6 @@ public class Profile {
     String coverImageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     ProfileVisibility visibility = ProfileVisibility.PUBLIC;
 }

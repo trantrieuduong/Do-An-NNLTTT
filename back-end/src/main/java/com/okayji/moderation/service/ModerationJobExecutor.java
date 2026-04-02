@@ -1,11 +1,7 @@
 package com.okayji.moderation.service;
 
-import com.okayji.feed.entity.Post;
-import com.okayji.feed.entity.PostStatus;
-import com.okayji.feed.repository.PostRepository;
 import com.okayji.moderation.entity.ModerationJob;
 import com.okayji.moderation.entity.ModerationJobStatus;
-import com.okayji.moderation.entity.TargetType;
 import com.okayji.moderation.repository.ModerationJobRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -24,15 +20,13 @@ public class ModerationJobExecutor {
     private final ModerationJobRepository moderationJobRepository;
     private final ModerationOrchestrator moderationOrchestrator;
     private final ModerationJobExecutor self;
-    private final PostRepository postRepository;
 
     public ModerationJobExecutor(ModerationJobRepository moderationJobRepository,
                                  ModerationOrchestrator moderationOrchestrator,
-                                 @Lazy ModerationJobExecutor moderationJobExecutor, PostRepository postRepository) {
+                                 @Lazy ModerationJobExecutor moderationJobExecutor) {
         this.moderationJobRepository = moderationJobRepository;
         this.moderationOrchestrator = moderationOrchestrator;
         this.self = moderationJobExecutor;
-        this.postRepository = postRepository;
     }
 
     public void prepareAndExecute(Long jobId) {
@@ -75,7 +69,6 @@ public class ModerationJobExecutor {
             job.setStatus(ModerationJobStatus.PENDING);
         } else {
             job.setStatus(ModerationJobStatus.FAILED);
-            self.markTargetUnderReview(jobId);
         }
 
         moderationJobRepository.save(job);
@@ -100,18 +93,5 @@ public class ModerationJobExecutor {
         ModerationJob job = moderationJobRepository.findById(jobId).orElseThrow();
         job.setStatus(ModerationJobStatus.DONE);
         moderationJobRepository.save(job);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void markTargetUnderReview(Long jobId) {
-        ModerationJob job = moderationJobRepository.findById(jobId).orElseThrow();
-        if (job.getTargetType().equals(TargetType.POST)) {
-            Optional<Post> optPost = postRepository.findById(job.getTargetId());
-            if (optPost.isEmpty())
-                return;
-            Post post = optPost.get();
-            post.setStatus(PostStatus.UNDER_REVIEW);
-            postRepository.save(post);
-        }
     }
 }

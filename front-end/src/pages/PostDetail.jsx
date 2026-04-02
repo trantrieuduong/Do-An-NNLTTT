@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Send, ArrowLeft, Clock, Loader2, AlertCircle, Tra
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/common/ConfirmModal';
 import { feedService } from '../api/feedService';
+import { reportService } from '../api/reportService';
 import '../styles/PostDetail.css';
 import MainLayout from '../components/MainLayout';
 import { getAvatarUrl } from '../utils/constants';
@@ -47,6 +48,11 @@ const PostDetail = () => {
 
     const [isUpdatingPost, setIsUpdatingPost] = useState(false);
 
+    const [reportData, setReportData] = useState({
+        reason: '',
+        details: ''
+    });
+
     // Modal state
     const [confirmation, setConfirmation] = useState({
         isOpen: false,
@@ -54,6 +60,11 @@ const PostDetail = () => {
         payload: null,
         title: '',
         message: ''
+    });
+    const [reportModal, setReportModal] = useState({
+        isOpen: false,
+        targetId: null,
+        targetType: null, // 'POST' hoặc 'COMMENT'
     });
 
     useEffect(() => {
@@ -272,6 +283,31 @@ const PostDetail = () => {
         setEditContent('');
     };
 
+    const handleSendReport = async (e) => {
+        if (e) e.preventDefault();
+        if (!reportData.reason) {
+            toast.error("Please select a reason");
+            return;
+        }
+
+        try {
+            const response = await reportService.createReport(
+                reportModal.targetId,
+                reportModal.targetType,
+                reportData.reason,
+                reportData.details
+            );
+
+            if (response.success) {
+                toast.success("Thank you for your report!");
+                setReportModal({ ...reportModal, isOpen: false });
+                setReportData({ reason: '', details: '' }); // Reset form
+            }
+        } catch (error) {
+            toast.error(error.message || "Failed to send report");
+        }
+    };
+
     if (loading) {
         return (
             <MainLayout>
@@ -346,16 +382,27 @@ const PostDetail = () => {
                             </span>
                             
                         </div>
-                        {currentUser && (currentUser.id === post.userId || currentUser.userId === post.userId) && (
                             <div className="post-actions" style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+                                {currentUser && (currentUser.id === post.userId || currentUser.userId === post.userId) ?(
+                                    <>
                                 <button onClick={handleEditPostClick} className="post-action-btn edit" title="Edit post">
                                     <Edit2 size={18} />
                                 </button>
                                 <button onClick={handleDeletePostClick} className="post-action-btn delete" title="Delete post">
                                     <Trash2 size={18} />
                                 </button>
-                            </div>
-                        )}
+                                    </>
+                                ) : (
+                                // Nút báo cáo cho bài viết của người khác
+                                <button 
+                                    onClick={() => setReportModal({ isOpen: true, targetId: post.id, targetType: 'POST' })} 
+                                    className="post-action-btn report" 
+                                    title="Report post"
+                                >
+                                    <AlertCircle size={18} />
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="post-content">
@@ -508,7 +555,7 @@ const PostDetail = () => {
                                                         <span className="comment-time">
                                                             {new Date(comment.createdAt).toLocaleString()}
                                                         </span>
-                                                        {currentUser && (currentUser.id === comment.userId || currentUser.userId === comment.userId) && (
+                                                        {currentUser && (currentUser.id === comment.userId || currentUser.userId === comment.userId) ? (
                                                             <div className="comment-actions" style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
                                                                 <button onClick={() => handleEditClick(comment)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
                                                                     <Edit2 size={14} />
@@ -517,8 +564,16 @@ const PostDetail = () => {
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             </div>
-                                                        )}
-                                                    </div>
+                                                        ) : (
+                                                            <button 
+                                                                className="comment-report-btn"
+                                                                onClick={() => setReportModal({ isOpen: true, targetId: comment.id, targetType: 'COMMENT' })}
+                                                                title="Report comment"
+                                                            >
+                                                                <AlertCircle size={14} />
+                                                            </button>
+                                                        )}                                                                                                     
+                                                        </div>
                                                     <div className="comment-text">{comment.content}</div>
                                                 </>
                                             )}
@@ -555,6 +610,56 @@ const PostDetail = () => {
                 confirmText="Delete"
                 isDanger={true}
             />
+            {reportModal.isOpen && (
+                <div className="custom-modal-overlay">
+                    <div className="report-modal">
+                        <h3>Report {reportModal.targetType === 'POST' ? 'Post' : 'Comment'}</h3>
+                        <p>Help us understand what's happening.</p>
+                        
+                        <div className="reason-list-grid">
+                            {['SPAM', 'VIOLENCE', 'HARASSMENT', 'HATE_SPEECH', 'NUDITY', 'OTHER'].map(r => (
+                                <button 
+                                    key={r} 
+                                    type="button"
+                                    className={`reason-chip ${reportData.reason === r ? 'active' : ''}`}
+                                    onClick={() => setReportData({ ...reportData, reason: r })}
+                                >
+                                    {r.replace('_', ' ')}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="report-details-field">
+                            <label>Additional Details (Optional):</label>
+                            <textarea 
+                                placeholder="Tell us more about the violation..."
+                                value={reportData.details}
+                                onChange={(e) => setReportData({ ...reportData, details: e.target.value })}
+                                rows={4}
+                            />
+                        </div>
+                        
+                        <div className="report-modal-actions">
+                            <button 
+                                onClick={() => {
+                                    setReportModal({ ...reportModal, isOpen: false });
+                                    setReportData({ reason: '', details: '' });
+                                }} 
+                                className="cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleSendReport}
+                                disabled={!reportData.reason}
+                                className="submit-report-btn"
+                            >
+                                Submit Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </MainLayout>
     );
 };
