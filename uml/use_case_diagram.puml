@@ -1,0 +1,60 @@
+@startuml OkayJi_Use_Case_Diagram
+title Use Case Diagram - OkayJi
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Khách" as Guest
+actor "Người dùng" as User
+actor "Quản trị viên" as Admin
+actor "AI Service" as AI
+
+User -|> Guest
+Admin -|> User
+
+rectangle "Hệ thống OkayJi" {
+  usecase "Đăng ký" as UC_Signup
+  usecase "Đăng nhập" as UC_Login
+
+  usecase "Quản lý tài khoản" as UC_Account
+  usecase "Xem profile người khác" as UC_Discovery
+  usecase "Quản lý bạn bè" as UC_Friend
+  usecase "Xem bảng tin" as UC_Feed
+  usecase "Quản lý bài đăng" as UC_Post
+  usecase "Quản lý bình luận" as UC_Comment
+  usecase "Nhắn tin" as UC_Chat
+  usecase "Quản lý thông báo" as UC_Notification
+  usecase "Tải file" as UC_Upload
+
+  usecase "Xem thống kê hệ thống" as UC_AdminStats
+  usecase "Kiểm duyệt nội dung" as UC_Moderate
+}
+
+Guest --> UC_Signup
+Guest --> UC_Login
+
+User --> UC_Account
+User --> UC_Discovery
+User --> UC_Friend
+User --> UC_Feed
+User --> UC_Post
+User --> UC_Comment
+User --> UC_Chat
+User --> UC_Notification
+
+Admin --> UC_AdminStats
+Admin --> UC_Moderate
+
+AI --> UC_Moderate
+
+UC_Upload ..> UC_Post : <<extend>>
+UC_Upload ..> UC_Chat : <<extend>>
+
+note right of User
+  Tất cả chức năng của User/Admin
+  đều yêu cầu đã đăng nhập,
+  trừ Đăng ký và Đăng nhập.
+end note
+
+@enduml
