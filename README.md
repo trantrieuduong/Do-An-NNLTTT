@@ -171,6 +171,10 @@ Hệ thống được tổ chức theo mô hình **client-server**, trong đó f
 - Nội dung vi phạm sẽ bị từ chối hoặc đưa vào trạng thái chờ xem xét
 - Hỗ trợ retry khi dịch vụ ngoài thất bại
 
+### ⚖️ Báo cáo và giải quyết báo cáo
+- Cho phép người dùng báo cáo đăng bài / bình luận vi phạm các vấn đề đạo đức, xã hội
+- Nội dung vi phạm sẽ bị từ chối hoặc bác bỏ báo cáo bởi quản trị viên
+
 ### 📁 Quản lý tệp
 - Upload ảnh, video lên AWS S3
 - Tạo Presigned URL để truy cập file
