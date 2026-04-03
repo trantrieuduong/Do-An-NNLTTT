@@ -37,6 +37,9 @@ public enum AppError {
     FILE_NOT_ALLOW("File type not allow", HttpStatus.BAD_REQUEST),
 
     NOTI_NOT_FOUND("Notification not found", HttpStatus.NOT_FOUND),
+
+    DUPLICATE_REPORT_IN_A_TARGET("You have already reported this content", HttpStatus.CONFLICT),
+    REPORT_NOT_FOUND("Report not found", HttpStatus.NOT_FOUND),
     ;
 
     private final String message;

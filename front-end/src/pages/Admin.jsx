@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import AdminDashboard from "../pages/AdminDashboard";
 import ModerationPanel from "../pages/ModerationPanel";
+import ReportManagement from "../pages/ReportManagement";
 import "../styles/Admin.css";
-import { LayoutDashboard, ShieldCheck, LogOut } from "lucide-react";
+import { LayoutDashboard, ShieldCheck, Flag, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Admin = () => {
@@ -31,6 +32,15 @@ const Admin = () => {
           >
             <ShieldCheck size={20} /> Post Moderation
           </button>
+          <button 
+              className={`admin-nav-item ${activeTab === 'reports' ? 'active' : ''}`}
+              onClick={() => setActiveTab('reports')}
+          >
+              <div className="nav-item-content">
+                  <Flag size={20} /> 
+                  <span>Report Management</span>
+              </div>
+          </button>
 
           <div className="sidebar-footer">
             <button className="nav-item admin-logout-btn" onClick={handleLogout}>
@@ -44,6 +54,7 @@ const Admin = () => {
       <div className="admin-content">
         {activeTab === "dashboard" && <AdminDashboard />}
         {activeTab === "moderation" && <ModerationPanel />}
+        {activeTab === "reports" && <ReportManagement />}
       </div>
     </div>
   );

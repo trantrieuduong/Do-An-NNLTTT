@@ -77,7 +77,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public AdminPostResponse updatePostStatus(String postId, PostStatus newStatus) {
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("Post not found - id: " + postId));
         post.setStatus(newStatus);
