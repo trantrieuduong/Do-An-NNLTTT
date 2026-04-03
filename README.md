@@ -171,6 +171,10 @@ Hệ thống được tổ chức theo mô hình **client-server**, trong đó f
 - Nội dung vi phạm sẽ bị từ chối hoặc đưa vào trạng thái chờ xem xét
 - Hỗ trợ retry khi dịch vụ ngoài thất bại
 
+### 🧐 Kiểm duyệt thủ công
+- Cho phép quản trị viên chỉnh sửa trạng thái bài đăng
+- Cho phép quản trị viên kiểm duyệt các bài đăng chưa được AI đánh giá chính xác
+
 ### ⚖️ Báo cáo vi phạm và giải quyết báo cáo
 - Cho phép người dùng báo cáo đăng bài / bình luận vi phạm các vấn đề đạo đức, xã hội
 - Nội dung vi phạm sẽ bị từ chối hoặc bác bỏ báo cáo bởi quản trị viên
