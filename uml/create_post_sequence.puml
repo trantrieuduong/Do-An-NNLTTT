@@ -1,0 +1,64 @@
+@startuml
+actor User as U
+boundary "CreatePostComponent" as FE
+control "PostController" as Ctrl
+control "S3Controller" as S3Ctrl
+participant "PostService" as Svc
+participant "S3Service" as S3Svc
+participant "EntityManager" as EM
+participant "PostMapper" as Mapper
+database "PostRepository" as Repo
+database "ModerationJobRepository" as ModRepo
+database "UserRepository" as UserRepo
+
+U -> FE: Nhập nội dung và chọn ảnh/video
+FE -> S3Ctrl: generatePresignedUrl(request)
+activate S3Ctrl
+
+S3Ctrl -> S3Svc: generatePresignedUrl(request)
+activate S3Svc
+S3Svc --> S3Ctrl: PresignedUrlResponse
+S3Ctrl --> FE: ApiResponse<PresignedUrlResponse> (success=true, data=presignedUrlResponse)
+
+FE -> Ctrl: createPost(postCreationRequest, currentUser)
+Ctrl -> Svc: createPost(userId, postCreationRequest)
+activate Svc
+
+Svc -> UserRepo: findById(userId)
+activate UserRepo
+UserRepo --> Svc: User (hoặc throw USER_NOT_FOUND)
+
+Svc -> Mapper: toPost(postCreationRequest, user)
+activate Mapper
+Mapper --> Svc: Post (status=PENDING)
+
+loop Với mỗi media trong request
+    Svc -> S3Svc: getContentTypeFromS3Url(url)
+    S3Svc --> Svc: ContentType
+
+    alt ContentType không đúng định dạng (IMAGE/VIDEO)
+        Svc --> Ctrl: throw INVALID_INPUT_DATA
+        Ctrl --> FE: ApiResponse<PostResponse> (success=false, message="Invalid input data")
+        FE --> U: Báo lỗi không đúng định dạng file và Kết thúc luồng xử lý
+    else Định dạng hợp lệ
+        Svc -> Svc: Thêm media vào danh sách PostMedia
+    end
+end
+
+Svc -> Repo: saveAndFlush(post)
+activate Repo
+
+Svc -> EM: refresh(post)
+activate EM
+
+Svc -> ModRepo: save(moderationJob)
+activate ModRepo
+
+Svc -> Mapper: toPostResponse(post)
+Mapper --> Svc: PostResponse
+Svc --> Ctrl: PostResponse
+
+Ctrl --> FE: ApiResponse<PostResponse> (success=true, message="Create post success", data=postResponse)
+FE --> U: Hiển thị thông báo thành công và Tải lại trang chủ
+
+@enduml

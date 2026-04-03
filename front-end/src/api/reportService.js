@@ -15,7 +15,7 @@ export const reportService = {
 
     getReports: async (status = 'PENDING', page = 0, size = 10) => {
         try {
-            const url = `/reports?status=${status}&page=${page}&size=${size}&sort=createdAt,desc`;
+            const url = `/admin/reports?status=${status}&page=${page}&size=${size}&sort=createdAt,desc`;
             return apiClient(url);
         } catch (error) {
             console.error('getReports error:', error);
@@ -24,7 +24,7 @@ export const reportService = {
     },
 
     resolveReport: async (reportId, resolution) => {
-        return apiClient(`/reports/${reportId}/resolve?resolution=${resolution}`, {
+        return apiClient(`/admin/reports/${reportId}/resolve?resolution=${resolution}`, {
             method: 'PUT',
         });
     }

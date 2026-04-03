@@ -105,6 +105,7 @@ front-end/
 ├── public/                             # Tài nguyên tĩnh công khai (favicon, ảnh...)
 ├── src/
 │   ├── api/                            # Lớp giao tiếp với back-end
+|   |   ├── adminService.js             # API lấy số liệu thống kê dashboard, lấy bài đăng để kiểm duyệt, cập nhật trạng thái bài đăng
 │   │   ├── apiClient.js                # HTTP client lõi (tự động gán JWT, xử lý lỗi)
 │   │   ├── authService.js              # API đăng ký, đăng nhập, đăng xuất
 │   │   ├── chatService.js              # API lấy hội thoại, tin nhắn (có cursor pagination)
@@ -112,6 +113,7 @@ front-end/
 │   │   ├── fileService.js              # API upload ảnh / tệp đính kèm
 │   │   ├── friendService.js            # API quản lý bạn bè
 │   │   ├── notificationService.js      # API thông báo
+│   │   ├── reportService.js            # API báo cáo vi phạm và xử lý báo cáo vi phạm (bài đăng, bình luận)
 │   │   └── userService.js              # API thông tin người dùng
 │   │
 │   ├── components/                     # Components UI tái sử dụng

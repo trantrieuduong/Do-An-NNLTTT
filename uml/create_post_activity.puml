@@ -1,0 +1,24 @@
+@startuml
+start
+: User nhập nội dung và đính kèm media;
+: User nhấn nút đăng Post;
+
+if (Có đính kèm media?) then (có)
+    : Hệ thống lấy Presigned URL từ S3;
+    : Hệ thống upload từng media lên S3;
+    : Lấy ContentType thực tế từ S3;
+    if (Kiểm tra ContentType từ S3 có khớp với Media Type không?) then (có)
+        : Thông báo: Định dạng media không hợp lệ;
+        stop
+    else (không)
+        : Lưu nội dung bài đăng và mediaUrls (trạng thái=PENDING);
+    endif
+else (không)
+    : Lưu nội dung bài đăng (trạng thái=PENDING);
+endif
+
+: Tạo và lưu ModerationJob;
+: Hệ thống làm mới trang bảng tin (trang chủ);
+: Thông báo: Tạo bài đăng thành công;
+stop
+@enduml
