@@ -171,7 +171,7 @@ Hệ thống được tổ chức theo mô hình **client-server**, trong đó f
 - Nội dung vi phạm sẽ bị từ chối hoặc đưa vào trạng thái chờ xem xét
 - Hỗ trợ retry khi dịch vụ ngoài thất bại
 
-### ⚖️ Báo cáo và giải quyết báo cáo
+### ⚖️ Báo cáo vi phạm và giải quyết báo cáo
 - Cho phép người dùng báo cáo đăng bài / bình luận vi phạm các vấn đề đạo đức, xã hội
 - Nội dung vi phạm sẽ bị từ chối hoặc bác bỏ báo cáo bởi quản trị viên
 
@@ -191,11 +191,13 @@ root/
 │   │   ├── main/
 │   │   │   ├── java/com/okayji/
 │   │   │   │   ├── OkayjiApplication.java
+|   |   |   |   ├── admin/
 │   │   │   │   ├── identity/
 │   │   │   │   ├── feed/
 │   │   │   │   ├── chat/
 │   │   │   │   ├── notification/
 │   │   │   │   ├── moderation/
+|   |   |   |   ├── report/
 │   │   │   │   ├── file/
 │   │   │   │   ├── config/
 │   │   │   │   ├── common/
@@ -398,6 +400,7 @@ Back-end chịu trách nhiệm:
 
 | Nhóm API | Chức năng |
 |---|---|
+| `/admin` | Xem thống kê vận hành website, giải quyết báo cáo, kiểm duyệt thủ công |
 | `/auth` | Đăng ký, đăng nhập, đăng xuất |
 | `/users` | Thông tin người dùng, hồ sơ cá nhân |
 | `/posts` | Tạo, sửa, xóa, xem bài viết |
@@ -406,6 +409,7 @@ Back-end chịu trách nhiệm:
 | `/chats` | Hội thoại, tin nhắn |
 | `/notifications` | Danh sách thông báo |
 | `/files` | Upload file, lấy presigned URL |
+| `/reports` | Báo cáo bài đăng / bình luận |
 
 ---
 
