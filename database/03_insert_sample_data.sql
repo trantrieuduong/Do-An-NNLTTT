@@ -419,7 +419,7 @@ values  ('0826d9d1-95a2-4a25-b8ca-8f81b778c3a6', '2026-02-01 07:15:23.161346', '
 
 insert into Okayji.reports (id, created_at, details, reason, resolved_at, resolved_by, status, target_id, target_type, reporter_id)
 values  ('7bea6bcc-f022-423a-952c-4cdfe2c9b40d', '2026-04-04 06:30:35.949553', '', 'HATE_SPEECH', null, null, 'PENDING', '77585aea-a6af-4817-a842-791ea2cbf4f8', 'COMMENT', '936d9223-7f0a-454b-8f16-1e08d7fb0e5d'),
-        ('bad03908-a94d-4595-bb8b-d5a067d7c6ef', '2026-04-04 06:28:16.064031', 'nà ná na', 'HARASSMENT', null, null, 'PENDING', '1f9b1a38-adad-4d10-9994-355d362f1986', 'POST', 'b1190643-56b0-4efb-bf9e-631837ceca83');
+        ('bad03908-a94d-4595-bb8b-d5a067d7c6ef', '2026-04-04 06:28:16.064031', 'She harasses me many time', 'HARASSMENT', null, null, 'PENDING', '1f9b1a38-adad-4d10-9994-355d362f1986', 'POST', 'b1190643-56b0-4efb-bf9e-631837ceca83');
 
 
 SET FOREIGN_KEY_CHECKS=1;

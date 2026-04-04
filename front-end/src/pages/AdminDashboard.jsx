@@ -107,7 +107,7 @@ const AdminDashboard = () => {
                             })}
                         </div>
                     ) : (
-                        <p style={{ color: '#64748b', marginTop: '10px' }}>Chưa có dữ liệu thống kê cho năm {selectedYear}.</p>
+                        <p style={{ color: '#64748b', marginTop: '10px' }}>Don't have stats in year {selectedYear}.</p>
                     )}
                 </div>
             </div>

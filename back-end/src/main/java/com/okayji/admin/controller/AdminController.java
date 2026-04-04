@@ -1,11 +1,13 @@
 package com.okayji.admin.controller;
 
 import com.okayji.admin.dto.response.AdminPostResponse;
+import com.okayji.admin.dto.response.AdminUserResponse;
 import com.okayji.admin.dto.response.ModerationDashboardStats;
 import com.okayji.admin.service.AdminService;
 import com.okayji.common.ApiResponse;
 import com.okayji.feed.entity.PostStatus;
 import com.okayji.identity.entity.User;
+import com.okayji.identity.entity.UserStatus;
 import com.okayji.report.dto.response.ReportResponse;
 import com.okayji.report.entity.ReportStatus;
 import com.okayji.report.service.ReportService;
@@ -86,6 +88,31 @@ public class AdminController {
                 .success(true)
                 .message("Report resolved successfully")
                 .data(reportService.resolveReport(reportId, resolution, currentUser.getId()))
+                .build();
+    }
+
+    @GetMapping("/users")
+    @Operation(summary = "Get users for moderation")
+    ApiResponse<Page<AdminUserResponse>> getUsersForModeration(
+            @RequestParam(required = false, defaultValue = "ACTIVE") UserStatus status,
+            Pageable pageable) {
+        return ApiResponse.<Page<AdminUserResponse>>builder()
+                .success(true)
+                .message("Get users for moderation successfully")
+                .data(adminService.getUsersForModeration(status, pageable))
+                .build();
+    }
+
+    @PutMapping("/users/{userId}/update")
+    @Operation(summary = "Resolve a report by admin")
+    ApiResponse<AdminUserResponse> updateUserStatus(
+            @PathVariable String userId,
+            @RequestParam UserStatus status
+    ) {
+        return ApiResponse.<AdminUserResponse>builder()
+                .success(true)
+                .message("Update status successfully")
+                .data(adminService.updateUserStatus(userId, status))
                 .build();
     }
 }

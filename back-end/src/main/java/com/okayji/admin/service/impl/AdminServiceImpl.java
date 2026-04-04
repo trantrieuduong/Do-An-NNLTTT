@@ -1,16 +1,23 @@
 package com.okayji.admin.service.impl;
 
 import com.okayji.admin.dto.response.AdminPostResponse;
+import com.okayji.admin.dto.response.AdminUserResponse;
 import com.okayji.admin.dto.response.ModerationDashboardStats;
 import com.okayji.admin.dto.response.MonthlyUserStat;
 import com.okayji.admin.service.AdminService;
+import com.okayji.exception.AppError;
+import com.okayji.exception.AppException;
 import com.okayji.feed.dto.PostMediaDto;
 import com.okayji.feed.entity.Post;
 import com.okayji.feed.entity.PostStatus;
 import com.okayji.feed.repository.PostRepository;
+import com.okayji.identity.entity.User;
+import com.okayji.identity.entity.UserStatus;
 import com.okayji.identity.repository.UserRepository;
 import com.okayji.moderation.entity.TargetType;
 import com.okayji.moderation.repository.ModerationJobRepository;
+import com.okayji.notification.service.NotificationFactory;
+import com.okayji.notification.service.NotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +37,7 @@ public class AdminServiceImpl implements AdminService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ModerationJobRepository moderationJobRepository;
+    private final NotificationService notificationService;
 
     @Override
     public ModerationDashboardStats getDashboardStats(Integer year) {
@@ -85,6 +93,38 @@ public class AdminServiceImpl implements AdminService {
         return convertToResponse(post);
     }
 
+    @Override
+    public Page<AdminUserResponse> getUsersForModeration(UserStatus status, Pageable pageable) {
+        UserStatus targetStatus = (status != null) ? status: UserStatus.ACTIVE;
+        Page<User> posts = userRepository.findByStatus(targetStatus, pageable);
+        List<AdminUserResponse> responses = posts.getContent().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(responses, pageable, posts.getTotalElements());
+    }
+
+    @Override
+    @Transactional
+    public AdminUserResponse updateUserStatus(String userId, UserStatus newStatus) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
+
+        user.setStatus(newStatus);
+
+        if (newStatus == UserStatus.DELETED) {
+            // Xóa token đăng nhập hiện tại bằng cách đặt thời điểm thu hồi
+            user.setTokenRevokedAt(Instant.now());
+        }
+        else if (newStatus == UserStatus.SUSPENDED){
+            notificationService.sendNotification(
+                    NotificationFactory.suspendedUser(userRepository.findUserById(userId))
+            );
+        }
+
+        userRepository.save(user);
+        return convertToResponse(user);
+    }
+
     private AdminPostResponse convertToResponse(Post post) {
         return AdminPostResponse.builder()
                 .id(post.getId())
@@ -97,6 +137,18 @@ public class AdminServiceImpl implements AdminService {
                 .postMedia(post.getPostMedia().stream()
                         .map(m -> new PostMediaDto(m.getType(), m.getMediaUrl()))
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    private AdminUserResponse convertToResponse(User user) {
+        return AdminUserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .status(user.getStatus())
+                .createdAt(user.getCreatedAt())
+                .fullName(user.getProfile() != null ? user.getProfile().getFullName() : null)
+                .avatarUrl(user.getProfile() != null ? user.getProfile().getAvatarUrl() : null)
                 .build();
     }
 }

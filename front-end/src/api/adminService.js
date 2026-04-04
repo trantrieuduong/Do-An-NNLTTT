@@ -17,4 +17,15 @@ export const adminService = {
             method: 'PUT',
         });
     },
+
+    getAllUsers: async (status = 'ACTIVE', page = 0, size = 10) => {
+        const url = `/admin/users?status=${status}&page=${page}&size=${size}&sort=createdAt,desc`;
+        return apiClient(url);
+    },
+
+    updateUserStatus: async (userId, status) => {
+        return apiClient(`/admin/users/${userId}/update?status=${status}`, {
+            method: 'PUT',
+        });
+    },
 };

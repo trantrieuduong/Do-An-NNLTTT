@@ -9,6 +9,7 @@ import com.okayji.feed.entity.PostStatus;
 import com.okayji.feed.repository.CommentRepository;
 import com.okayji.feed.repository.PostRepository;
 import com.okayji.identity.entity.User;
+import com.okayji.identity.entity.UserStatus;
 import com.okayji.identity.repository.UserRepository;
 import com.okayji.notification.service.NotificationFactory;
 import com.okayji.notification.service.NotificationService;
@@ -45,14 +46,14 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    public Page<ReportResponse> getReports(ReportStatus status, Pageable pageable) {
-        ReportStatus targetStatus = (status != null) ? status : ReportStatus.PENDING;
-        Page<Report> reports = reportRepository.findByStatus(targetStatus, pageable);
-        List<ReportResponse> responses = reports.getContent().stream()
-                .map(this::convertReportToResponse)
-                .collect(Collectors.toList());
-        return new PageImpl<>(responses, pageable, reports.getTotalElements());
-    }
+        public Page<ReportResponse> getReports(ReportStatus status, Pageable pageable) {
+            ReportStatus targetStatus = (status != null) ? status : ReportStatus.PENDING;
+            Page<Report> reports = reportRepository.findByStatus(targetStatus, pageable);
+            List<ReportResponse> responses = reports.getContent().stream()
+                    .map(this::convertReportToResponse)
+                    .collect(Collectors.toList());
+            return new PageImpl<>(responses, pageable, reports.getTotalElements());
+        }
 
     @Override
     @Transactional
@@ -75,10 +76,12 @@ public class ReportServiceImpl implements ReportService {
 
     private ReportResponse convertReportToResponse(Report report) {
         String targetContent = null;
+        String relatedPostId = null;
         List<PostMediaDto> targetMedia = new ArrayList<>();
 
         // Load nội dung của bài post hoặc comment bị báo cáo
         if (report.getTargetType() == ReportTargetType.POST) {
+            relatedPostId = report.getTargetId();
             targetContent = postRepository.findById(report.getTargetId())
                     .map(post -> {
                         // Load media của post
@@ -89,11 +92,14 @@ public class ReportServiceImpl implements ReportService {
                         }
                         return post.getContent();
                     })
-                    .orElse("[Post has been deleted]");
+                    .orElse("[Post has been rejected]");
         } else if (report.getTargetType() == ReportTargetType.COMMENT) {
-            targetContent = commentRepository.findById(report.getTargetId())
-                    .map(Comment::getContent)
-                    .orElse("[Comment has been deleted]");
+            Comment comment = commentRepository.findById(report.getTargetId()).orElse(null);
+            if (comment != null && comment.getPost() != null) {
+                targetContent = comment.getContent();
+                relatedPostId = comment.getPost().getId();
+            }
+            else targetContent = "[Comment has been deleted]";
         }
 
         return ReportResponse.builder()
@@ -101,6 +107,7 @@ public class ReportServiceImpl implements ReportService {
                 .reporterId(report.getReporter().getId())
                 .reporterName(report.getReporter().getUsername())
                 .targetId(report.getTargetId())
+                .relatedPostId(relatedPostId)
                 .targetType(report.getTargetType())
                 .reason(report.getReason())
                 .details(report.getDetails())
@@ -147,6 +154,12 @@ public class ReportServiceImpl implements ReportService {
                         )
                 );
                 commentRepository.deleteById(targetComment.getId());
+            } else if (report.getTargetType() == ReportTargetType.USER) {
+                User targetUser = userRepository.findById(report.getTargetId())
+                        .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
+                targetUser.setStatus(UserStatus.DELETED);
+                targetUser.setTokenRevokedAt(Instant.now());
+                userRepository.save(targetUser);
             }
         }
         reportRepository.save(report);

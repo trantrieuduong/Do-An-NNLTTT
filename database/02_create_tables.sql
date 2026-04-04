@@ -54,6 +54,7 @@ create table if not exists user
     status               enum ('ACTIVE', 'DELETED', 'INACTIVE', 'SUSPENDED') null,
     last_change_username datetime(6)                                         null,
     updated_at           datetime(6)                                         null,
+    tokenRevokedAt       datetime(6)                                         null,
     constraint uk_user_email
         unique (email),
     constraint uk_user_username
@@ -279,7 +280,7 @@ create table if not exists reports
     resolved_by varchar(255)                                                                      null,
     status      enum ('DISMISSED', 'PENDING', 'RESOLVED')                                         null,
     target_id   varchar(255)                                                                      not null,
-    target_type enum ('COMMENT', 'POST')                                                          not null,
+    target_type enum ('COMMENT', 'POST', 'USER')                                                  not null,
     reporter_id varchar(255)                                                                      not null,
     constraint FKd214gj02gt1gtw1j1q5j14hyt
         foreign key (reporter_id) references user (id)

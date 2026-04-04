@@ -64,6 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 User user = userRepository.findUserById(userId);
 
+                if (user.getTokenRevokedAt() != null && claims.getIssuedAt().toInstant().isBefore(user.getTokenRevokedAt())) {
+                    throw new JwtException("Token revoked");
+                }
+
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         user, null, user.getAuthorities()

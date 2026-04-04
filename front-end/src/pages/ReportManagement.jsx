@@ -73,8 +73,8 @@ const ReportManagement = () => {
   const getStatusBadgeColor = (status) => {
     const statusMap = {
       PENDING: "pending",
-      RESOLVED_APPROVED: "approved",
-      RESOLVED_REJECTED: "rejected",
+      RESOLVED: "approved",
+      DISMISSED: "rejected",
     };
     return statusMap[status] || "pending";
   };
@@ -106,8 +106,8 @@ const ReportManagement = () => {
             className="filter-select"
           >
             <option value="PENDING">Pending</option>
-            <option value="RESOLVED_APPROVED">Approved</option>
-            <option value="RESOLVED_REJECTED">Rejected</option>
+            <option value="RESOLVED">Approved</option>
+            <option value="DISMISSED">Dismissed</option>
           </select>
         </div>
       </div>

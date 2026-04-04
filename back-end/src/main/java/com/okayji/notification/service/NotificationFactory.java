@@ -93,6 +93,17 @@ public class NotificationFactory {
                 .build();
     }
 
+    public static Notification suspendedUser(User user) {
+        return Notification.builder()
+                .user(user)
+                .type(NotificationType.SYSTEM_ANNOUNCEMENT)
+                .payload(toJson(new SystemPayload(
+                        "Your account has been suspended due to policy violations. You can no longer create posts or comments.",
+                        null) // Thông báo cấp tài khoản
+                ))
+                .build();
+    }
+
     private static String toJson(Object obj) {
         try {
             return objectMapper.writeValueAsString(obj);

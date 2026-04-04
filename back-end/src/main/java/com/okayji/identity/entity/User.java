@@ -49,6 +49,8 @@ public class User implements UserDetails {
 
     String oauthId;
 
+    Instant tokenRevokedAt;
+
     @Enumerated(EnumType.STRING)
     UserStatus status = UserStatus.ACTIVE;
 

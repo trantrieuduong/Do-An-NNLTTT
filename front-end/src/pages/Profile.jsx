@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../components/MainLayout';
 import { userService } from '../api/userService';
-import { Loader2, Calendar, Mars, Venus, VenusAndMars, Edit2, UserPlus, UserCheck, UserX, Clock } from 'lucide-react';
+import { reportService } from '../api/reportService';
+import { Loader2, Calendar, Mars, Venus, VenusAndMars, Edit2, UserPlus, UserCheck, UserX, Clock, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfirmModal from '../components/common/ConfirmModal';
 import ImageUploader from '../components/common/ImageUploader';
@@ -42,6 +43,17 @@ const Profile = () => {
         payload: null,
         title: '',
         message: ''
+    });
+
+    const [reportModal, setReportModal] = useState({
+            isOpen: false,
+            targetId: null,
+            targetType: null,
+    });
+
+    const [reportData, setReportData] = useState({
+        reason: '',
+        details: ''
     });
 
     // Infinite scroll observer
@@ -280,6 +292,31 @@ const Profile = () => {
         navigate(`/post/${postId}`);
     };
 
+    const handleSendReport = async (e) => {
+        if (e) e.preventDefault();
+        if (!reportData.reason) {
+            toast.error("Please select a reason");
+            return;
+        }
+
+        try {
+            const response = await reportService.createReport(
+                reportModal.targetId,
+                reportModal.targetType,
+                reportData.reason,
+                reportData.details
+            );
+
+            if (response.success) {
+                toast.success("Thank you for your report!");
+                setReportModal({ ...reportModal, isOpen: false });
+                setReportData({ reason: '', details: '' }); // Reset form
+            }
+        } catch (error) {
+            toast.error(error.message || "Failed to send report");
+        }
+    };
+
     if (loading) {
         return (
             <MainLayout>
@@ -456,6 +493,15 @@ const Profile = () => {
                                                 <span>Add Friend</span>
                                             </button>
                                         )}
+
+                                        <button 
+                                            className="friend-btn" 
+                                            style={{ backgroundColor: '#fee2e2', color: '#ef4444', border: 'none', padding: '0.5rem' }}
+                                            onClick={() => setReportModal({ isOpen: true, targetId: profile.userId || profile.id, targetType: 'USER' })}
+                                            title="Report User"
+                                        >
+                                            <AlertCircle size={18} />
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -531,7 +577,7 @@ const Profile = () => {
                             )}
                         </>
                     ) : (
-                        <p style={{ color: '#94a3b8', textAlign: 'center' }}>Chưa có bài viết nào.</p>
+                        <p style={{ color: '#94a3b8', textAlign: 'center' }}>No post or you don't have permission</p>
                     )}
                 </div>
             </div>
@@ -544,6 +590,56 @@ const Profile = () => {
                 confirmText={confirmation.type === 'DELETE_POST' ? 'Delete' : 'Unfriend'}
                 isDanger={true}
             />
+            {reportModal.isOpen && (
+                <div className="custom-modal-overlay">
+                    <div className="report-modal">
+                        <h3>Report User</h3>
+                        <p>Help us understand what's happening.</p>
+                        
+                        <div className="reason-list-grid">
+                            {['SPAM', 'VIOLENCE', 'HARASSMENT', 'HATE_SPEECH', 'NUDITY', 'OTHER'].map(r => (
+                                <button 
+                                    key={r} 
+                                    type="button"
+                                    className={`reason-chip ${reportData.reason === r ? 'active' : ''}`}
+                                    onClick={() => setReportData({ ...reportData, reason: r })}
+                                >
+                                    {r.replace('_', ' ')}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="report-details-field">
+                            <label>Additional Details (Optional):</label>
+                            <textarea 
+                                placeholder="Tell us more about the violation..."
+                                value={reportData.details}
+                                onChange={(e) => setReportData({ ...reportData, details: e.target.value })}
+                                rows={4}
+                            />
+                        </div>
+                        
+                        <div className="report-modal-actions">
+                            <button 
+                                onClick={() => {
+                                    setReportModal({ ...reportModal, isOpen: false });
+                                    setReportData({ reason: '', details: '' });
+                                }} 
+                                className="cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleSendReport}
+                                disabled={!reportData.reason}
+                                className="submit-report-btn"
+                            >
+                                Submit Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </MainLayout>
     );
 };

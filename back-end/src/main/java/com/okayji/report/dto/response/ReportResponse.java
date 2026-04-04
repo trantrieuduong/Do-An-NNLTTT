@@ -21,6 +21,7 @@ public class ReportResponse {
     String reporterName;
     String targetId;
     ReportTargetType targetType;
+    String relatedPostId;
     ReportReason reason;
     String details;
     String targetContent;
@@ -29,5 +30,4 @@ public class ReportResponse {
     Instant createdAt;
     String resolvedBy;
     Instant resolvedAt;
-
 }
