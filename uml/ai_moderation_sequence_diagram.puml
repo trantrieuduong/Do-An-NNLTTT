@@ -4,13 +4,13 @@ title Sequence Diagram: AI Content Moderation
 
 actor "System Cron" as Cron
 participant "ModerationJob\nScheduler" as Scheduler
-participant "ModerationJob\nRepository" as JobRepo
+database "ModerationJob\nRepository" as JobRepo
 participant "ModerationJob\nExecutor" as Executor
 participant "Moderation\nOrchestrator" as Orchestrator
 participant "Moderation\nService" as ModService
 participant "S3Service &\nFFmpeg" as S3
 participant "OpenAI API" as OpenAI
-participant "Post/Comment\nRepository" as TargetRepo
+database "Post/Comment\nRepository" as TargetRepo
 participant "Notification\nService" as NotifService 
 
 Cron -> Scheduler : processPendingJobs() (mỗi 30s)
