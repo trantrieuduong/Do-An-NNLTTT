@@ -54,7 +54,6 @@ create table if not exists user
     status               enum ('ACTIVE', 'DELETED', 'INACTIVE', 'SUSPENDED') null,
     last_change_username datetime(6)                                         null,
     updated_at           datetime(6)                                         null,
-    tokenRevokedAt       datetime(6)                                         null,
     constraint uk_user_email
         unique (email),
     constraint uk_user_username

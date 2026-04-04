@@ -111,11 +111,7 @@ public class AdminServiceImpl implements AdminService {
 
         user.setStatus(newStatus);
 
-        if (newStatus == UserStatus.DELETED) {
-            // Xóa token đăng nhập hiện tại bằng cách đặt thời điểm thu hồi
-            user.setTokenRevokedAt(Instant.now());
-        }
-        else if (newStatus == UserStatus.SUSPENDED){
+        if (newStatus == UserStatus.SUSPENDED){
             notificationService.sendNotification(
                     NotificationFactory.suspendedUser(userRepository.findUserById(userId))
             );

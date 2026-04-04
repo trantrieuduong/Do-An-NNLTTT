@@ -3,6 +3,7 @@ package com.okayji.config;
 import com.okayji.common.ApiResponse;
 import com.okayji.exception.AppError;
 import com.okayji.identity.entity.User;
+import com.okayji.identity.entity.UserStatus;
 import com.okayji.identity.repository.InvalidatedTokenRepository;
 import com.okayji.identity.repository.UserRepository;
 import com.okayji.identity.service.JwtService;
@@ -64,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 User user = userRepository.findUserById(userId);
 
-                if (user.getTokenRevokedAt() != null && claims.getIssuedAt().toInstant().isBefore(user.getTokenRevokedAt())) {
+                if (user.getStatus() == UserStatus.DELETED) {
                     throw new JwtException("Token revoked");
                 }
 

@@ -158,7 +158,6 @@ public class ReportServiceImpl implements ReportService {
                 User targetUser = userRepository.findById(report.getTargetId())
                         .orElseThrow(() -> new AppException(AppError.USER_NOT_FOUND));
                 targetUser.setStatus(UserStatus.DELETED);
-                targetUser.setTokenRevokedAt(Instant.now());
                 userRepository.save(targetUser);
             }
         }
