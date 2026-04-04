@@ -151,6 +151,10 @@ Hệ thống được tổ chức theo mô hình **client-server**, trong đó f
 - Hủy kết bạn
 - Xem danh sách bạn bè & lời mời đang chờ
 
+### 🔎 Tìm kiếm
+- Tìm kiếm người dùng
+- Tìm kiếm bài đăng
+
 ### 🔔 Thông báo
 - Nhận thông báo real-time qua WebSocket khi có:
   - lượt like / bình luận
@@ -398,22 +402,24 @@ Back-end chịu trách nhiệm:
 - Gửi / nhận dữ liệu chat và thông báo real-time
 - Upload file lên AWS S3
 - Kiểm duyệt nội dung bằng AI
+- Thống kê hoạt động sử dụng hệ thống
+- Kiềm duyệt thủ công bổ trợ
 - Cung cấp tài liệu API qua Swagger UI
 
 ### Một số nhóm API tiêu biểu
 
-| Nhóm API | Chức năng |
-|---|---|
+| Nhóm API | Chức năng                                                              |
+|---|------------------------------------------------------------------------|
 | `/admin` | Xem thống kê vận hành website, giải quyết báo cáo, kiểm duyệt thủ công |
-| `/auth` | Đăng ký, đăng nhập, đăng xuất |
-| `/users` | Thông tin người dùng, hồ sơ cá nhân |
-| `/posts` | Tạo, sửa, xóa, xem bài viết |
-| `/comments` | Bình luận bài viết |
-| `/friends` | Kết bạn, phản hồi lời mời |
-| `/chats` | Hội thoại, tin nhắn |
-| `/notifications` | Danh sách thông báo |
-| `/files` | Upload file, lấy presigned URL |
-| `/reports` | Báo cáo bài đăng / bình luận |
+| `/auth` | Đăng ký, đăng nhập, đăng xuất                                          |
+| `/users` | Thông tin người dùng, hồ sơ cá nhân                                    |
+| `/posts` | Tạo, sửa, xóa, tìm kiếm, xem bài viết                                  |
+| `/comments` | Bình luận bài viết                                                     |
+| `/friends` | Kết bạn, phản hồi lời mời                                              |
+| `/chats` | Hội thoại, tin nhắn                                                    |
+| `/notifications` | Danh sách thông báo                                                    |
+| `/files` | Upload file, lấy presigned URL                                         |
+| `/reports` | Báo cáo bài đăng / bình luận                                           |
 
 ---
 

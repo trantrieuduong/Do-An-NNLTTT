@@ -28,6 +28,7 @@ rectangle "Hệ thống OkayJi" {
   usecase "Tải file" as UC_Upload
 
   usecase "Xem thống kê hệ thống" as UC_AdminStats
+  usecase "Kiểm duyệt vi phạm" as UC_AdminReportResolvement
   usecase "Kiểm duyệt nội dung" as UC_Moderate
 }
 
@@ -44,6 +45,7 @@ User --> UC_Chat
 User --> UC_Notification
 
 Admin --> UC_AdminStats
+Admin --> UC_AdminReportResolvement
 Admin --> UC_Moderate
 
 AI --> UC_Moderate

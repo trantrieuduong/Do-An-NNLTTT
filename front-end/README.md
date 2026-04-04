@@ -109,7 +109,7 @@ front-end/
 │   │   ├── apiClient.js                # HTTP client lõi (tự động gán JWT, xử lý lỗi)
 │   │   ├── authService.js              # API đăng ký, đăng nhập, đăng xuất
 │   │   ├── chatService.js              # API lấy hội thoại, tin nhắn (có cursor pagination)
-│   │   ├── feedService.js              # API bài viết: tạo, lấy feed, thích, bình luận
+│   │   ├── feedService.js              # API bài viết: tạo, lấy feed, thích, bình luận, tìm post
 │   │   ├── fileService.js              # API upload ảnh / tệp đính kèm
 │   │   ├── friendService.js            # API quản lý bạn bè
 │   │   ├── notificationService.js      # API thông báo
