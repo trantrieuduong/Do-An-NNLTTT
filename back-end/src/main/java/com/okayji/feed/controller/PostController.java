@@ -112,4 +112,18 @@ public class PostController {
                 .success(true)
                 .build();
     }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search posts by keyword")
+    public ApiResponse<Page<PostResponse>> searchPosts(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @CurrentUser User currentUser) {
+        return ApiResponse.<Page<PostResponse>>builder()
+                .success(true)
+                .message("Search posts successfully")
+                .data(postService.searchPosts(currentUser.getId(), keyword, page, size))
+                .build();
+    }
 }

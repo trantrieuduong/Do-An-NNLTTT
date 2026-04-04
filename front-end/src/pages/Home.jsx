@@ -1,19 +1,29 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Loader2, RefreshCw, ArrowUp } from 'lucide-react';
+import { Loader2, RefreshCw, ArrowUp, Search, X, User, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/MainLayout';
 import CreatePost from '../components/CreatePost';
 import PostCard from '../components/PostCard';
 import { feedService } from '../api/feedService';
+import { userService } from '../api/userService'; 
+import { getAvatarUrl } from '../utils/constants';
 import '../styles/Home.css';
 
 const LIMIT = 20;
 
 const Home = () => {
+    const navigate = useNavigate();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [hasMore, setHasMore] = useState(false);
     const [error, setError] = useState(null);
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
+    const [showDropdown, setShowDropdown] = useState(false);
+    const searchRef = useRef(null);
 
     // Cursor state saved in refs to avoid stale closure issues
     const nextCursorTimeRef = useRef(null);
@@ -24,6 +34,48 @@ const Home = () => {
 
     // Sentinel element for IntersectionObserver
     const sentinelRef = useRef(null);
+
+    // Search Logic (Debounced)
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (!searchQuery.trim()) {
+                setSearchResults({ users: [], posts: [] });
+                setIsSearching(false);
+                return;
+            }
+            
+            setIsSearching(true);
+            try {
+                // Fetch song song cả User và Post
+                const [usersRes, postsRes] = await Promise.all([
+                    userService.searchUsers(searchQuery).catch(() => ({ data: [] })),
+                    feedService.searchPosts(searchQuery).catch(() => ({ data: { content: [] } }))
+                ]);
+
+                setSearchResults({
+                    users: usersRes.data?.content || usersRes.data || [],
+                    posts: postsRes.data?.content || postsRes.data || []
+                });
+            } catch (err) {
+                console.error("Search error", err);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 500); // Đợi 500ms sau khi ngừng gõ mới gọi API
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Click outside to close dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // ─── Core fetch ──────────────────────────────────────────────────────────
     /**
@@ -61,7 +113,7 @@ const Home = () => {
             setHasMore(nextCursorTime != null && nextCursorId != null);
         } catch (err) {
             console.error('Failed to load feed:', err);
-            setError('Không thể tải bảng tin. Vui lòng thử lại.');
+            setError('Failed to load feed. Try again later.');
         }
     }, []);
 
@@ -127,19 +179,95 @@ const Home = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [fetchFeed]);
 
-    // ─── Render ───────────────────────────────────────────────────────────────
+    // Render
     return (
         <MainLayout>
             <div className="home-container">
+                {/* --- Search Bar Section --- */}
+                <div className="home-search-wrapper" ref={searchRef}>
+                    <div className="home-search-bar">
+                        <Search size={18} className="search-icon" />
+                        <input 
+                            type="text" 
+                            placeholder="Search user, post..." 
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setShowDropdown(true);
+                            }}
+                            onFocus={() => setShowDropdown(true)}
+                        />
+                        {searchQuery && (
+                            <button className="clear-search-btn" onClick={() => setSearchQuery('')}>
+                                <X size={16} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Search Dropdown */}
+                    {showDropdown && searchQuery.trim() && (
+                        <div className="search-dropdown">
+                            {isSearching ? (
+                                <div className="search-loading"><Loader2 className="animate-spin" size={20} /></div>
+                            ) : (
+                                <>
+                                    {/* Users Section */}
+                                    {searchResults.users.length > 0 && (
+                                        <div className="search-section">
+                                            <h4><User size={14}/> Users</h4>
+                                            {searchResults.users.slice(0, 5).map(user => (
+                                                <div 
+                                                    key={user.id} 
+                                                    className="search-item user-item"
+                                                    onClick={() => navigate(`/profile/${user.username}`)}
+                                                >
+                                                    <img src={user.avatarUrl || getAvatarUrl(user.fullName || user.username)} alt="" />
+                                                    <div className="search-user-info">
+                                                        <span className="name">{user.fullName}</span>
+                                                        <span className="username">@{user.username}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Posts Section */}
+                                    {searchResults.posts.length > 0 && (
+                                        <div className="search-section">
+                                            <h4><FileText size={14}/> Posts</h4>
+                                            {searchResults.posts.slice(0, 5).map(post => (
+                                                <div 
+                                                    key={post.id} 
+                                                    className="search-item post-item"
+                                                    onClick={() => navigate(`/post/${post.id}`)}
+                                                >
+                                                    <span className="post-content-preview">
+                                                        {post.content?.length > 50 ? post.content.substring(0, 50) + '...' : post.content}
+                                                    </span>
+                                                    <span className="post-author-preview">bởi @{post.username}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {searchResults.users.length === 0 && searchResults.posts.length === 0 && (
+                                        <div className="search-no-results">No search result</div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 {/* Create Post */}
                 <CreatePost onPostCreated={handlePostCreated} />
 
                 {/* Feed header */}
                 <div className="home-feed-header">
-                    <h2 className="home-feed-title">Bảng tin</h2>
+                    <h2 className="home-feed-title">Feed</h2>
                     <button className="home-refresh-btn" onClick={handleRefresh} title="Làm mới">
                         <RefreshCw size={15} />
-                        <span>Làm mới</span>
+                        <span>Refresh</span>
                     </button>
                 </div>
 
@@ -172,8 +300,8 @@ const Home = () => {
                 {!loading && !error && posts.length === 0 && (
                     <div className="home-empty">
                         <div className="home-empty-icon">📭</div>
-                        <h3>Bảng tin trống</h3>
-                        <p>Hãy kết bạn thêm hoặc tạo bài viết đầu tiên!</p>
+                        <h3>Empty feed</h3>
+                        <p>Please add friend or create first post!</p>
                     </div>
                 )}
 
@@ -193,7 +321,7 @@ const Home = () => {
                             {loadingMore && (
                                 <div className="home-load-more-indicator">
                                     <Loader2 size={22} className="home-spinner" />
-                                    <span>Đang tải thêm bài viết...</span>
+                                    <span>Loading more post...</span>
                                 </div>
                             )}
                         </div>
@@ -202,7 +330,7 @@ const Home = () => {
                         {!hasMore && (
                             <div className="home-end-message">
                                 <span>✦</span>
-                                <p>Bạn đã xem hết bảng tin</p>
+                                <p>No more feed to display</p>
                                 <span>✦</span>
                             </div>
                         )}

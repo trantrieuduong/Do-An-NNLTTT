@@ -11,4 +11,5 @@ public interface PostService {
     PostResponse updatePost(String postId, PostUpdateRequest postUpdateRequest);
     void deletePostById(String id);
     Page<PostResponse> getPostsByUser(String viewerId, String userIdOrUsername, int page, int size);
+    Page<PostResponse> searchPosts(String viewerId, String keyword, int page, int size);
 }

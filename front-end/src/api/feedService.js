@@ -70,4 +70,8 @@ export const feedService = {
         if (cursorId) params.set('cursorId', cursorId);
         return apiClient(`/feed?${params.toString()}`);
     },
+
+    searchPosts: async (keyword) => {
+        return apiClient(`/posts/search?keyword=${encodeURIComponent(keyword)}`);
+    }
 };

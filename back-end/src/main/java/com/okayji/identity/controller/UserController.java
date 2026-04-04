@@ -3,6 +3,7 @@ package com.okayji.identity.controller;
 import com.okayji.identity.dto.request.UserChangePasswordRequest;
 import com.okayji.common.ApiResponse;
 import com.okayji.identity.dto.request.UserChangeUsernameRequest;
+import com.okayji.identity.dto.response.ProfileBasicResponse;
 import com.okayji.identity.entity.User;
 import com.okayji.identity.service.UserService;
 import com.okayji.utils.CurrentUser;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -40,6 +42,20 @@ public class UserController {
         return ApiResponse.builder()
                 .success(true)
                 .message("Change username successfully")
+                .build();
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search users by username or full name")
+    ApiResponse<Page<ProfileBasicResponse>> searchUsers(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ApiResponse.<Page<ProfileBasicResponse>>builder()
+                .success(true)
+                .message("Search users successfully")
+                .data(userService.searchUsers(keyword, page, size))
                 .build();
     }
 }

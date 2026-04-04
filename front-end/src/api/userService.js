@@ -32,5 +32,9 @@ export const userService = {
             method: 'POST',
             body: data,
         });
+    },
+
+    searchUsers: async (keyword) => {
+    return apiClient(`/users/search?keyword=${encodeURIComponent(keyword)}`);
     }
 };

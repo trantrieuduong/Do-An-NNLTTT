@@ -2,7 +2,6 @@ package com.okayji.feed.repository;
 
 import com.okayji.feed.entity.Post;
 import com.okayji.feed.entity.PostStatus;
-import com.okayji.moderation.entity.ModerationJobStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -49,4 +48,24 @@ public interface PostRepository extends JpaRepository<Post,String> {
     long countByStatus(PostStatus status);
 
     Page<Post> findByStatus(PostStatus status, Pageable pageable);
+
+    @Query("""
+    select p from Post p
+    where lower(cast(p.content as string)) like lower(concat('%', :keyword, '%'))
+    and p.status = PostStatus.PUBLISHED
+    and (
+        p.user.id = :viewerId
+        or p.user.profile.visibility = 'PUBLIC'
+        or (
+            p.user.profile.visibility = 'FRIEND_ONLY'
+            and exists (
+                select 1 from Friend f
+                where (f.userLow.id = p.user.id and f.userHigh.id = :viewerId)
+                   or (f.userLow.id = :viewerId and f.userHigh.id = p.user.id)
+            )
+        )
+    )
+    order by p.createdAt desc
+""")
+    Page<Post> searchPublishedPosts(@Param("viewerId") String viewerId, @Param("keyword") String keyword, Pageable pageable);
 }

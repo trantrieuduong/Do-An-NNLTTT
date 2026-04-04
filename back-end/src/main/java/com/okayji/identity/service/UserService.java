@@ -3,7 +3,9 @@ package com.okayji.identity.service;
 import com.okayji.identity.dto.request.UserChangePasswordRequest;
 import com.okayji.identity.dto.request.UserChangeUsernameRequest;
 import com.okayji.identity.dto.request.UserCreationRequest;
+import com.okayji.identity.dto.response.ProfileBasicResponse;
 import com.okayji.identity.dto.response.UserResponse;
+import org.springframework.data.domain.Page;
 
 public interface UserService {
     UserResponse findById(String id);
@@ -11,4 +13,5 @@ public interface UserService {
     void changePassword(String userId, UserChangePasswordRequest request);
     void changeUsername(String userId, UserChangeUsernameRequest request);
     void delete(String userId);
+    Page<ProfileBasicResponse> searchUsers(String keyword, int page, int size);
 }

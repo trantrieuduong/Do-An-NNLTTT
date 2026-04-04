@@ -3,6 +3,7 @@ package com.okayji.identity.service.impl;
 import com.okayji.identity.dto.request.UserChangePasswordRequest;
 import com.okayji.identity.dto.request.UserChangeUsernameRequest;
 import com.okayji.identity.dto.request.UserCreationRequest;
+import com.okayji.identity.dto.response.ProfileBasicResponse;
 import com.okayji.identity.dto.response.UserResponse;
 import com.okayji.identity.entity.Profile;
 import com.okayji.identity.entity.Role;
@@ -10,10 +11,14 @@ import com.okayji.identity.entity.User;
 import com.okayji.identity.entity.UserRole;
 import com.okayji.exception.AppError;
 import com.okayji.exception.AppException;
+import com.okayji.mapper.ProfileMapper;
 import com.okayji.mapper.UserMapper;
 import com.okayji.identity.repository.RoleRepository;
 import com.okayji.identity.repository.UserRepository;
 import com.okayji.identity.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     private PasswordEncoder passwordEncoder;
     private RoleRepository roleRepository;
+    private ProfileMapper profileMapper;
 
     @Override
     public UserResponse findById(String id) {
@@ -102,5 +108,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(String userId) {
 
+    }
+
+    @Override
+    public Page<ProfileBasicResponse> searchUsers(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.searchUsers(keyword, pageable);
+        return users.map(user -> profileMapper.toProfileBasicResponse(user.getProfile()));
     }
 }
