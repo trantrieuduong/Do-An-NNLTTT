@@ -366,7 +366,16 @@ Swagger UI:
 http://localhost:8686/swagger-ui/index.html
 ```
 
-### 5. Chạy Front-end
+### 5. Cấu hình Front-end kết nối Back-end
+
+Mở file:
+
+```js
+// front-end/src/utils/constants.js
+export const BASE_URL = 'http://localhost:8686';
+```
+
+### 6. Chạy Front-end
 
 Mở terminal mới:
 
@@ -382,14 +391,18 @@ Front-end chạy tại:
 http://localhost:5173
 ```
 
-### 6. Cấu hình Front-end kết nối Back-end
+### 7. Sample Account
 
-Mở file:
-
-```js
-// front-end/src/utils/constants.js
-export const BASE_URL = 'http://localhost:8686';
-```
+| Username | Password | Role |
+|---|---|---|
+| admin | 12345678 | ADMIN |
+| user1 | 12345678 | USER |
+| user2 | 12345678 | USER |
+| test01 | 12345678 | USER |
+| test02 | 12345678 | USER |
+| test03 | 12345678 | USER |
+| test04 | 12345678 | USER |
+| test05 | 12345678 | USER |
 
 ---
 
