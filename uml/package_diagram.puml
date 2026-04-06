@@ -1,0 +1,54 @@
+@startuml
+package "frontend" {
+}
+
+package "controller" {
+}
+
+package "mapper" {
+}
+
+package "dto" {
+}
+
+package "service" {
+}
+
+package "repository" {
+}
+
+package "entity" {
+}
+
+package "config" {
+}
+
+package "common" {
+}
+
+package "exception" {
+}
+
+package "utils" {
+}
+
+frontend --> controller
+
+controller --> service
+controller --> common
+controller --> utils
+controller --> dto
+controller --> entity
+
+service --> dto
+service --> repository
+service --> mapper
+service --> entity
+service --> exception
+
+repository --> entity
+
+mapper --> dto
+mapper --> entity
+
+@enduml

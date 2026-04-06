@@ -1,0 +1,317 @@
+@startuml
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "entity" {
+    class Chat {
+        - String id
+        - ChatType type
+        - User createdBy
+        - String directKey
+        - String chatAvatarUrl
+        - String chatName
+        - Instant createdAt
+        - Instant lastMessageAt
+        - Long lastMessageSeq
+    }
+    class ChatMember {
+        - Long id
+        - Chat chat
+        - User member
+        - Long lastReadSeq
+        - Instant joinedAt
+    }
+    class Message {
+        - Long id
+        - Chat chat
+        - Long seq
+        - MessageType type
+        - String content
+        - User sender
+        - Instant createdAt
+    }
+    class Comment {
+        - String id
+        - Post post
+        - User user
+        - String content
+        - Instant createdAt
+    }
+    class Friend {
+        - String id
+        - User userLow
+        - User userHigh
+    }
+    class FriendRequest {
+        - String id
+        - User sender
+        - User receiver
+        - Instant createdAt
+    }
+    class Post {
+        - String id
+        - User user
+        - String content
+        - Instant createdAt
+        - List<Comment> comments
+        - List<Reaction> reactions
+        - List<PostMedia> postMedia
+        - PostStatus status
+    }
+    class PostMedia {
+        - Long id
+        - Post post
+        - PostMediaType type
+        - String mediaUrl
+    }
+    class Reaction {
+        - String id
+        - Post post
+        - User user
+        - Instant createdAt
+    }
+    class InvalidatedToken {
+        - String id
+        - Date expiryTime
+    }
+    class Profile {
+        - String userId
+        - User user
+        - String fullName
+        - Gender gender
+        - String bio
+        - LocalDate birthday
+        - String avatarUrl
+        - String coverImageUrl
+        - ProfileVisibility visibility
+    }
+    class Role {
+        - UserRole name
+        - String description
+    }
+    class User {
+        - String id
+        - String username
+        - String email
+        - String password
+        - Instant createdAt
+        - Instant updatedAt
+        - Instant lastChangeUsername
+        - String oauthProvider
+        - String oauthId
+        - UserStatus status
+        - Set<Role> roles
+        - Profile profile
+    }
+    class ModerationJob {
+        - Long id
+        - TargetType targetType
+        - String targetId
+        - ModerationJobStatus status
+        - Instant createdAt
+        - int retryCount
+        - int maxRetries
+        - List<ModerationResult> moderationResults
+    }
+    class ModerationResult {
+        - Long id
+        - ModerationJob moderationJob
+        - InputType inputType
+        - ModerationDecision decision
+        - boolean flagged
+        - Map<String, Boolean> categories
+        - Map<String, Double> categoryScores
+        - Instant createdAt
+    }
+    class Notification {
+        - Long id
+        - User user
+        - String payload
+        - NotificationType type
+        - boolean read
+        - Instant createdAt
+    }
+    class Report {
+        - String id
+        - User reporter
+        - String targetId
+        - ReportTargetType targetType
+        - ReportReason reason
+        - String details
+        - ReportStatus status
+        - Instant createdAt
+        - String resolvedBy
+        - Instant resolvedAt
+    }
+
+    enum ChatEvent {
+        NEW_MESSAGE
+        NEW_CHAT
+    }
+    enum ChatType {
+        DIRECT
+        GROUP
+    }
+    enum MessageType {
+        TEXT
+        IMAGE
+        VIDEO
+        FILE
+    }
+    enum AppError {
+        UNCATEGORIZED_EXCEPTION
+        INVALID_INPUT_DATA
+        UNAUTHENTICATED
+        UNAUTHORIZED
+        USERNAME_EXISTED
+        CHANGE_USERNAME_LIMIT
+        EMAIL_EXISTED
+        USER_NOT_FOUND
+        POST_NOT_FOUND
+        COMMENT_NOT_FOUND
+        WRONG_PASSWORD
+        PASSWORD_NOT_MATCH
+        FRIEND_YOURSELF
+        FRIEND_ALREADY
+        NOT_FRIEND
+        FRIEND_REQUEST_NOT_FOUND
+        FRIEND_REQUEST_EXISTS
+        CHAT_NOT_FOUND
+        USER_ALREADY_IN_CHAT
+        MAX_FILE_SIZE
+        FILE_NOT_ALLOW
+        NOTI_NOT_FOUND
+        DUPLICATE_REPORT_IN_A_TARGET
+        REPORT_NOT_FOUND
+    }
+    enum PostMediaType {
+        IMAGE
+        VIDEO
+    }
+    enum PostStatus {
+        PENDING
+        PUBLISHED
+        REJECTED
+        UNDER_REVIEW
+    }
+    enum Gender {
+        MALE
+        FEMALE
+        OTHER
+    }
+    enum ProfileVisibility {
+        PUBLIC
+        FRIEND_ONLY
+    }
+    enum UserRole {
+        USER
+        ADMIN
+    }
+    enum UserStatus {
+        ACTIVE
+        SUSPENDED
+        DELETED
+    }
+    enum InputType {
+        TEXT
+        IMAGE
+        VIDEO_FRAME
+    }
+    enum ModerationDecision {
+        ALLOW
+        REVIEW
+        BLOCK
+    }
+    enum ModerationJobStatus {
+        PENDING
+        PROCESSING
+        FAILED
+        DONE
+    }
+    enum TargetType {
+        POST
+        COMMENT
+    }
+    enum NotificationType {
+        FRIEND_REQUEST
+        NEW_FRIEND
+        LIKE_POST
+        COMMENT_POST
+        SYSTEM_ANNOUNCEMENT
+    }
+    enum ReportReason {
+        SPAM
+        VIOLENCE
+        HARASSMENT
+        HATE_SPEECH
+        NUDITY
+        SCAM
+        OTHER
+    }
+    enum ReportStatus {
+        PENDING
+        RESOLVED
+        DISMISSED
+    }
+    enum ReportTargetType {
+        POST
+        COMMENT
+        USER
+    }
+}
+
+package "repository" {
+    interface ModerationJobRepository
+    interface ModerationResultRepository
+    interface PostRepository
+    interface CommentRepository
+}
+
+package "service" {
+    class ModerationJobExecutor
+    class ModerationJobScheduler
+    interface ModerationOrchestrator
+    interface ModerationService
+    interface NotificationService
+    interface S3Service
+}
+
+ModerationJobExecutor --> ModerationJobRepository
+ModerationJobExecutor --> ModerationOrchestrator
+ModerationJobExecutor --> ModerationJobExecutor
+ModerationJobExecutor --> PostRepository
+
+ModerationJobScheduler --> ModerationJobRepository
+ModerationJobScheduler --> ModerationJobExecutor
+
+ModerationOrchestrator --> PostRepository
+ModerationOrchestrator --> ModerationService
+ModerationOrchestrator --> ModerationResultRepository
+ModerationOrchestrator --> NotificationService
+ModerationOrchestrator --> CommentRepository
+
+ModerationService --> S3Service
+
+' Relationships
+User "1" --> "1" Profile : has
+User "1" --> "0..*" Post : creates
+User "1" --> "0..*" Comment : writes
+User "1" --> "0..*" Reaction : performs
+User "1" --> "0..*" Message : sends
+User "1" --> "0..*" Notification : receives
+User "1" --> "0..*" Report : reports
+User "1" --> "0..*" Chat : createdBy
+User "1" --> "0..*" Friend : has
+User "1" --> "0..*" FriendRequest : has
+User "1" --> "0..*" ChatMember : is
+User "*" --> "*" Role : user_role
+
+Post "1" --> "0..*" Comment : has
+Post "1" --> "0..*" Reaction : receives
+Post "1" --> "0..*" PostMedia : contains
+
+Chat "1" --> "1..*" ChatMember : includes
+Chat "1" --> "0..*" Message : contains
+
+ModerationJob "1" --> "0..*" ModerationResult : produces
+@enduml
