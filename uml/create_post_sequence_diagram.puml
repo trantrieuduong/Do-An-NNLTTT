@@ -12,13 +12,14 @@ database "ModerationJobRepository" as ModRepo
 database "UserRepository" as UserRepo
 
 U -> FE: Nhập nội dung và chọn ảnh/video
+U -> FE: Nhấn nút đăng
 FE -> S3Ctrl: generatePresignedUrl(request)
 activate S3Ctrl
 
 S3Ctrl -> S3Svc: generatePresignedUrl(request)
 activate S3Svc
-S3Svc --> S3Ctrl: PresignedUrlResponse
-S3Ctrl --> FE: ApiResponse<PresignedUrlResponse> (success=true, data=presignedUrlResponse)
+S3Svc --> S3Ctrl: presignedUrlResponse
+S3Ctrl --> FE: apiResponse (success, presignedUrlResponse)
 
 FE -> Ctrl: createPost(postCreationRequest, currentUser)
 Ctrl -> Svc: createPost(userId, postCreationRequest)
@@ -26,20 +27,20 @@ activate Svc
 
 Svc -> UserRepo: findById(userId)
 activate UserRepo
-UserRepo --> Svc: User (hoặc throw USER_NOT_FOUND)
+UserRepo --> Svc: user (hoặc throw USER_NOT_FOUND)
 
 Svc -> Mapper: toPost(postCreationRequest, user)
 activate Mapper
-Mapper --> Svc: Post (status=PENDING)
+Mapper --> Svc: post (status=PENDING)
 
-loop Với mỗi media trong request
+loop Mỗi media trong request
     Svc -> S3Svc: getContentTypeFromS3Url(url)
-    S3Svc --> Svc: ContentType
+    S3Svc --> Svc: contentType
 
-    alt ContentType không đúng định dạng (IMAGE/VIDEO)
+    alt contentType không đúng định dạng
         Svc --> Ctrl: throw INVALID_INPUT_DATA
-        Ctrl --> FE: ApiResponse<PostResponse> (success=false, message="Invalid input data")
-        FE --> U: Báo lỗi không đúng định dạng file và Kết thúc luồng xử lý
+        Ctrl --> FE: apiResponse (failed)
+        FE --> U: Báo lỗi không đúng định dạng file
     else Định dạng hợp lệ
         Svc -> Svc: Thêm media vào danh sách PostMedia
     end
@@ -55,10 +56,10 @@ Svc -> ModRepo: save(moderationJob)
 activate ModRepo
 
 Svc -> Mapper: toPostResponse(post)
-Mapper --> Svc: PostResponse
-Svc --> Ctrl: PostResponse
+Mapper --> Svc: postResponse
+Svc --> Ctrl: postResponse
 
-Ctrl --> FE: ApiResponse<PostResponse> (success=true, message="Create post success", data=postResponse)
-FE --> U: Hiển thị thông báo thành công và Tải lại trang chủ
+Ctrl --> FE: apiResponse (success, postResponse)
+FE --> U: Thông báo thành công và Tải lại trang chủ
 
 @enduml
