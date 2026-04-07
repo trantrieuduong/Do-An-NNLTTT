@@ -7,10 +7,10 @@ if (Có đính kèm media?) then (có)
     : Hệ thống lấy Presigned URL từ S3;
     : Hệ thống upload từng media lên S3;
     : Lấy ContentType thực tế từ S3;
-    if (Kiểm tra ContentType từ S3 có khớp với Media Type không?) then (có)
+    if (ContentType từ S3 có khớp với Media Type?) then (không)
         : Thông báo: Định dạng media không hợp lệ;
         stop
-    else (không)
+    else (có)
         : Lưu nội dung bài đăng và mediaUrls (trạng thái=PENDING);
     endif
 else (không)

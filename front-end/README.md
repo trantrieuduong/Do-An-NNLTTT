@@ -85,16 +85,17 @@ Tính năng chat sử dụng **STOMP over SockJS** để nhận/gửi tin nhắn
 
 ## ✨ Tính Năng Chính
 
-| Màn hình | Mô tả |
-|---|---|
-| 🔐 **Đăng ký / Đăng nhập** | Tạo tài khoản, xác thực, lưu JWT token |
-| 🏠 **Trang chủ (News Feed)** | Xem bảng tin bài viết, tạo bài viết mới |
-| 📝 **Chi tiết bài viết** | Xem bài viết đầy đủ, bình luận, thích, chia sẻ |
-| 👤 **Trang cá nhân** | Xem và chỉnh sửa thông tin hồ sơ, danh sách bài viết |
-| 👥 **Bạn bè** | Gửi/chấp nhận/hủy lời mời kết bạn, xem danh sách bạn bè |
-| 💬 **Nhắn tin** | Chat cá nhân và nhóm theo thời gian thực qua WebSocket |
+| Màn hình | Mô tả                                                     |
+|---|-----------------------------------------------------------|
+| 🔐 **Đăng ký / Đăng nhập** | Tạo tài khoản, xác thực, lưu JWT token                    |
+| 🏠 **Trang chủ (News Feed)** | Xem bảng tin bài viết, tạo bài viết mới                   |
+| 📝 **Chi tiết bài viết** | Xem bài viết đầy đủ, bình luận, thích, chia sẻ            |
+| 👤 **Trang cá nhân** | Xem và chỉnh sửa thông tin hồ sơ, danh sách bài viết      |
+| 👥 **Bạn bè** | Gửi/chấp nhận/hủy lời mời kết bạn, xem danh sách bạn bè   |
+| 💬 **Nhắn tin** | Chat cá nhân và nhóm theo thời gian thực qua WebSocket    |
 | 🔔 **Thông báo** | Nhận thông báo real-time (kết bạn, lượt thích, bình luận) |
-| 🔒 **Bảo mật** | Đổi mật khẩu, quản lý bảo mật tài khoản |
+| ⚖️ **Bảo mật** | Báo cáo bài viết, bình luận, người dùng vi phạm           |
+| 🔒 **Bảo mật** | Đổi mật khẩu, quản lý bảo mật tài khoản                   |
 
 ---
 
@@ -113,7 +114,7 @@ front-end/
 │   │   ├── fileService.js              # API upload ảnh / tệp đính kèm
 │   │   ├── friendService.js            # API quản lý bạn bè
 │   │   ├── notificationService.js      # API thông báo
-│   │   ├── reportService.js            # API báo cáo vi phạm và xử lý báo cáo vi phạm (bài đăng, bình luận)
+│   │   ├── reportService.js            # API báo cáo vi phạm và xử lý báo cáo vi phạm (bài đăng, bình luận, người dùng)
 │   │   └── userService.js              # API thông tin người dùng
 │   │
 │   ├── components/                     # Components UI tái sử dụng
@@ -139,6 +140,7 @@ front-end/
 │   │   └── NotificationContext.jsx     # Quản lý thông báo real-time
 │   │
 │   ├── pages/                          # Các màn hình / trang (route-level)
+│   │   ├── AdminDashboard.jsx          # Trang dashboard admin
 │   │   ├── Chat.jsx                    # Trang nhắn tin
 │   │   ├── Friends.jsx                 # Trang quản lý bạn bè
 │   │   ├── Home.jsx                    # Trang chủ (news feed)
@@ -146,6 +148,8 @@ front-end/
 │   │   ├── PostDetail.jsx              # Trang chi tiết bài viết
 │   │   ├── Profile.jsx                 # Trang cá nhân người dùng
 │   │   ├── Register.jsx                # Trang đăng ký tài khoản
+│   │   ├── ReportManagement.jsx        # Trang quản lý báo cáo vi phạm
+│   │   ├── UserManagement.jsx          # Trang quản lý người dùng
 │   │   └── Security.jsx                # Trang bảo mật tài khoản
 │   │
 │   ├── styles/                         # File CSS toàn cục và theo module
