@@ -56,7 +56,7 @@ const AdminDashboard = () => {
                 <StatCard title="Approved" value={stats.totalApproved} color="success" />
                 <StatCard title="Blocked" value={stats.totalBlocked} color="danger" />
                 <StatCard title="Reviewing" value={stats.totalReviewing} color="warning" />
-                <StatCard title="Total Posts" value={stats.totalPosts} color="primary" />
+                <StatCard title="Total Chats" value={stats.totalChats} color="primary" />
                 <StatCard title="Total Users" value={stats.totalUsers} color="secondary" />
             </div>
 

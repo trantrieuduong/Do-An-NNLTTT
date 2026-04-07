@@ -5,6 +5,7 @@ import com.okayji.admin.dto.response.AdminUserResponse;
 import com.okayji.admin.dto.response.ModerationDashboardStats;
 import com.okayji.admin.dto.response.MonthlyUserStat;
 import com.okayji.admin.service.AdminService;
+import com.okayji.chat.repository.ChatRepository;
 import com.okayji.exception.AppError;
 import com.okayji.exception.AppException;
 import com.okayji.feed.dto.PostMediaDto;
@@ -14,8 +15,6 @@ import com.okayji.feed.repository.PostRepository;
 import com.okayji.identity.entity.User;
 import com.okayji.identity.entity.UserStatus;
 import com.okayji.identity.repository.UserRepository;
-import com.okayji.moderation.entity.TargetType;
-import com.okayji.moderation.repository.ModerationJobRepository;
 import com.okayji.notification.service.NotificationFactory;
 import com.okayji.notification.service.NotificationService;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 public class AdminServiceImpl implements AdminService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ModerationJobRepository moderationJobRepository;
+    private final ChatRepository chatRepository;
     private final NotificationService notificationService;
 
     @Override
@@ -45,7 +44,7 @@ public class AdminServiceImpl implements AdminService {
         long totalApproved = postRepository.countByStatus(PostStatus.PUBLISHED);
         long totalReviewing = postRepository.countByStatus(PostStatus.UNDER_REVIEW);
         long totalUsers = userRepository.count();
-        long totalPosts = moderationJobRepository.countByTargetType(TargetType.POST);
+        long totalChats = chatRepository.count();
 
         int targetYearValue = (year != null) ? year : Year.now().getValue();
         List<MonthlyUserStat> monthlyUsers = new ArrayList<>();
@@ -69,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
                 .totalApproved(totalApproved)
                 .totalBlocked(totalBlocked)
                 .totalReviewing(totalReviewing)
-                .totalPosts(totalPosts)
+                .totalChats(totalChats)
                 .monthlyUsers(monthlyUsers)
                 .build();
     }

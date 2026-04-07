@@ -16,7 +16,7 @@ public class ModerationDashboardStats {
     long totalApproved;
     long totalBlocked;
     long totalReviewing;
-    long totalPosts;
+    long totalChats;
     long totalUsers;
     private List<MonthlyUserStat> monthlyUsers;
 }

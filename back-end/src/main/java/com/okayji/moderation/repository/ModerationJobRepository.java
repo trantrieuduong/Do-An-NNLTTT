@@ -1,7 +1,6 @@
 package com.okayji.moderation.repository;
 
 import com.okayji.moderation.entity.ModerationJob;
-import com.okayji.moderation.entity.TargetType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,6 +25,4 @@ public interface ModerationJobRepository extends JpaRepository<ModerationJob,Lon
         where j.status = com.okayji.moderation.entity.ModerationJobStatus.PROCESSING
     """)
     int requeueProcessingJobs();
-
-    long countByTargetType(TargetType targetType);
 }
