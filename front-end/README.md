@@ -85,17 +85,17 @@ Tính năng chat sử dụng **STOMP over SockJS** để nhận/gửi tin nhắn
 
 ## ✨ Tính Năng Chính
 
-| Màn hình | Mô tả                                                     |
-|---|-----------------------------------------------------------|
+| Màn hình                   | Mô tả                                                     |
+|----------------------------|-----------------------------------------------------------|
 | 🔐 **Đăng ký / Đăng nhập** | Tạo tài khoản, xác thực, lưu JWT token                    |
 | 🏠 **Trang chủ (News Feed)** | Xem bảng tin bài viết, tạo bài viết mới                   |
-| 📝 **Chi tiết bài viết** | Xem bài viết đầy đủ, bình luận, thích, chia sẻ            |
-| 👤 **Trang cá nhân** | Xem và chỉnh sửa thông tin hồ sơ, danh sách bài viết      |
-| 👥 **Bạn bè** | Gửi/chấp nhận/hủy lời mời kết bạn, xem danh sách bạn bè   |
-| 💬 **Nhắn tin** | Chat cá nhân và nhóm theo thời gian thực qua WebSocket    |
-| 🔔 **Thông báo** | Nhận thông báo real-time (kết bạn, lượt thích, bình luận) |
-| ⚖️ **Bảo mật** | Báo cáo bài viết, bình luận, người dùng vi phạm           |
-| 🔒 **Bảo mật** | Đổi mật khẩu, quản lý bảo mật tài khoản                   |
+| 📝 **Chi tiết bài viết**   | Xem bài viết đầy đủ, bình luận, thích, chia sẻ            |
+| 👤 **Trang cá nhân**       | Xem và chỉnh sửa thông tin hồ sơ, danh sách bài viết      |
+| 👥 **Bạn bè**              | Gửi/chấp nhận/hủy lời mời kết bạn, xem danh sách bạn bè   |
+| 💬 **Nhắn tin**            | Chat cá nhân và nhóm theo thời gian thực qua WebSocket    |
+| 🔔 **Thông báo**           | Nhận thông báo real-time (kết bạn, lượt thích, bình luận) |
+| ⚖️ **Báo cáo**             | Báo cáo bài viết, bình luận, người dùng vi phạm           |
+| 🔒 **Bảo mật**             | Đổi mật khẩu, quản lý bảo mật tài khoản                   |
 
 ---
 

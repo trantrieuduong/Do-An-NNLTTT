@@ -247,7 +247,7 @@ back-end/
 │   │   │   │   ├── dto/response/                # ReportResponse
 │   │   │   │   ├── entity/                      # Report, ReportReason, ReportStatus, ReportTargetType
 │   │   │   │   ├── repository/                  # ReportRepository
-│   │   │   │   └── service/                     # ReportService (+ impl/)
+│   │   │   │   └── service/                     # ReportService (+ impl/), ReportCleanup
 │   │   │   │
 │   │   │   ├── config/                          # Cấu hình Spring beans
 │   │   │   │   ├── SecurityConfig.java          # Cấu hình Spring Security, filter chain
