@@ -1,7 +1,6 @@
 package com.okayji.moderation.service;
 
 import com.okayji.moderation.entity.ModerationJob;
-import com.okayji.moderation.entity.ModerationJobStatus;
 import com.okayji.moderation.repository.ModerationJobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

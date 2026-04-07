@@ -8,80 +8,59 @@ start
 :Truy vấn danh sách ModerationJob (PENDING) ;
 
 while (Còn Job chưa xử lý?) is (Có)
-  :Lấy 1 ModerationJob;
-  :Cập nhật trạng thái Job thành PROCESSING;
+  :Lấy 1 ModerationJob & cập nhật trạng thái PROCESSING;
   
   if (Target Type) then (COMMENT)
     |Tương tác Bình luận (Comment)|
-    if (Comment vẫn tồn tại trong DB?) then (Có)
-      if (Có nội dung chữ?) then (Có)
-        :Gửi nội dung đến OpenAI API;
-        :Nhận kết quả ModerationVerdict;
-        if (Thuộc mức độ BLOCK?) then (Có)
-          :Gửi thông báo vi phạm qua WebSocket;
-          :Xóa vĩnh viễn Comment khỏi DB;
-        else (Không)
-        endif
-      else (Không)
+    if (Comment tồn tại và có text?) then (Có)
+      :Gửi nội dung đến OpenAI API;
+      if (Kết quả duyệt là BLOCK?) then (Có)
+        :Gửi thông báo vi phạm;
+        :Xóa Comment khỏi DB;
       endif
-    else (Không)
     endif
     
   else (POST)
     |Tương tác Bài viết (Post)|
-    if (Post vẫn tồn tại trong DB?) then (Có)
+    if (Post tồn tại?) then (Có)
       :Khởi tạo cờ reject = false;
       if (Có nội dung chữ?) then (Có)
-        :Gửi text đến OpenAI API;
-        :Lưu ModelResult vào DB;
-        if (Thuộc mức độ BLOCK?) then (Có)
-          :Gán reject = true;
-        else (Không)
+        :Gửi text đến OpenAI API & lưu DB;
+        if (Mức độ là BLOCK?) then (Có)
+          :reject = true;
         endif
-      else (Không)
       endif
       
-      while (Còn đối tượng Media để xét và (reject == false)?) is (Còn)
-        if (Loại giao tiếp gốc là hình ảnh hay video?) then (IMAGE)
-          :Gửi Image S3 URL đến OpenAI;
-          :Lưu kết quả duyệt ảnh;
-          if (Kết quả trả về bị BLOCK?) then (Có)
-             :Gán reject = true;
-          else (Không)
-          endif
+      while (Còn Media & reject == false) is (Còn)
+        if (Loại Media?) then (IMAGE)
+          :Gửi Image URL đến OpenAI & lưu DB;
         else (VIDEO)
-          :Tải file Video tạm thời từ S3;
-          :Gọi FFmpeg cắt nhỏ tạo các Frames ảnh tĩnh;
-          :Đẩy Frame lên S3 tạo URL công khai;
-          :Đưa từng URL tới OpenAI API;
-          :Xóa các file rác/nháp;
-          if (Tồn tại ít nhất 1 Frame bị BLOCK?) then (Có)
-             :Gán reject = true;
-          else (Không)
-          endif
+          :Trích xuất Frames từ Video bằng FFmpeg;
+          :Gửi URL từng Frame đến OpenAI API;
+        endif
+        
+        if (Kết quả trả về bị BLOCK?) then (Có)
+           :reject = true;
         endif
       endwhile (Hết)
       
-      if (Đánh giá chung Post) then (reject == true)
+      if (Đánh giá chung) then (reject == true)
         :PostStatus = REJECTED;
-      elseif (Chưa bị block nhưng bị nghi ngờ\n(Any status == REVIEW)?) then (Có)
+      elseif (Bị nghi ngờ/REVIEW) then (Có)
         :PostStatus = UNDER_REVIEW;
       else (An toàn)
         :PostStatus = PUBLISHED;
       endif
       
-      :Lưu cập nhật PostStatus vào Database;
-      if (PostStatus là REJECTED \n hoặc UNDER_REVIEW?) then (Có)
-        :Thông báo cho tác giả bài viết quá trình kiểm duyệt;
-      else (Không)
+      :Cập nhật PostStatus vào Database;
+      if (PostStatus != PUBLISHED) then (Có)
+        :Thông báo cho tác giả quá trình kiểm duyệt;
       endif
-      
-    else (Không)
     endif
   endif
   
   |Hệ Thống Lập Lịch (Job Scheduler)|
-  :Hoàn tất đánh dấu Job (DONE);
+  :Đánh dấu Job hoàn tất (DONE);
 endwhile (Hết)
 
 stop

@@ -17,93 +17,60 @@ Cron -> Scheduler : processPendingJobs() (mỗi 30s)
 activate Scheduler
 
 Scheduler -> JobRepo : findJobsForProcessing()
-activate JobRepo
-JobRepo --> Scheduler : List<ModerationJob> (Trạng thái PENDING)
-deactivate JobRepo
+JobRepo --> Scheduler : List<ModerationJob> (PENDING)
 
-loop cho mỗi job trong danh sách
+loop cho mỗi job
     Scheduler -> Executor : prepareAndExecute(jobId)
     activate Executor
     
-    Executor -> JobRepo : Đánh dấu job thành PROCESSING, tăng retryCount
-    activate JobRepo
-    JobRepo --> Executor : OK
-    deactivate JobRepo
+    Executor -> JobRepo : Đánh dấu PROCESSING & tăng retryCount
     
-    Executor -> Executor : execute(jobId) (có hỗ trợ @Retryable)
+    Executor -> Executor : execute(jobId) (@Retryable)
     activate Executor
     
     Executor -> JobRepo : findById(jobId)
-    activate JobRepo
-    JobRepo --> Executor : job details (Lấy TargetType: POST/COMMENT)
-    deactivate JobRepo
+    JobRepo --> Executor : job details (POST/COMMENT)
     
     alt TargetType == POST
         Executor -> Orchestrator : processPost(job)
         activate Orchestrator
         
         Orchestrator -> TargetRepo : findById(postId)
-        activate TargetRepo
-        TargetRepo --> Orchestrator : Post data (text, media)
-        deactivate TargetRepo
+        TargetRepo --> Orchestrator : Post data
         
-        opt Nếu Post có chứa Text
+        opt Post chứa Text
             Orchestrator -> ModService : moderateText(post.getContent())
-            activate ModService
-            ModService -> OpenAI : Gửi request kiểm duyệt nội dung Text
-            activate OpenAI
-            OpenAI --> ModService : Trả về kết quả đánh giá (Scores/Flags)
-            deactivate OpenAI
+            ModService -> OpenAI : Gửi request kiểm duyệt Text
+            OpenAI --> ModService : Trả về ModerationVerdict
             ModService --> Orchestrator : ModerationVerdict
-            deactivate ModService
-            Orchestrator -> JobRepo : Lưu ModerationResult vào DB
+            Orchestrator -> JobRepo : Lưu ModerationResult
         end
         
-        opt Có Media (Image) và chưa bị đánh dấu BLOCK
+        opt Có Media (Image) và chưa bị BLOCK
             Orchestrator -> ModService : moderateImageUrl(imageUrl)
-            activate ModService
-            ModService -> OpenAI : Gửi Image URL lên OpenAI API
-            activate OpenAI
-            OpenAI --> ModService : Trả về kết quả đánh giá Image
-            deactivate OpenAI
+            ModService -> OpenAI : Gửi kiểm duyệt Image URL
+            OpenAI --> ModService : Trả về ModerationVerdict
             ModService --> Orchestrator : ModerationVerdict
-            deactivate ModService
-            Orchestrator -> JobRepo : Lưu ModerationResult vào DB
+            Orchestrator -> JobRepo : Lưu ModerationResult
         end
         
-        opt Có Media (Video) và chưa bị đánh dấu BLOCK
+        opt Có Media (Video) và chưa bị BLOCK
             Orchestrator -> ModService : moderateVideoUrl(videoUrl)
             activate ModService
-            ModService -> S3 : Download video tạm thời
-            activate S3
-            S3 --> ModService : video file
-            ModService -> S3 : Trích xuất Frames qua FFmpeg
-            S3 --> ModService : danh sách hình ảnh frames
-            
-            loop cho mỗi frame
-                ModService -> S3 : Upload frame lên S3 tạo presigned URL
-                ModService -> OpenAI : Gửi URL của Frame
-                OpenAI --> ModService : Trả kết quả đánh giá Frame
-            end
+            ModService -> S3 : Download video tạm & trích xuất frames qua FFmpeg
+            ModService -> OpenAI : Gửi từng URL của Frame lên OpenAI API
+            OpenAI --> ModService : Trả kết quả đánh giá Frames
             ModService -> S3 : Xóa dữ liệu tạm / file rác
-            deactivate S3
             ModService --> Orchestrator : List<ModerationVerdict>
             deactivate ModService
-            Orchestrator -> JobRepo : Lưu ModerationResult vào DB
+            Orchestrator -> JobRepo : Lưu ModerationResult
         end
         
-        Orchestrator -> Orchestrator : Dựa vào kết quả tổng hợp quyết định\nREJECTED, UNDER_REVIEW, PUBLISHED
-        
+        Orchestrator -> Orchestrator : Đánh giá chung (REJECTED/UNDER_REVIEW/PUBLISHED)
         Orchestrator -> TargetRepo : save(post.setStatus(...))
-        activate TargetRepo
-        TargetRepo --> Orchestrator : OK
-        deactivate TargetRepo
         
-        opt Quyết định: REJECTED hoặc UNDER_REVIEW
+        opt Status là REJECTED hoặc UNDER_REVIEW
             Orchestrator -> NotifService : sendNotification(violatedPost)
-            activate NotifService
-            NotifService --> Orchestrator : OK (Gửi qua WebSocket xuống Client)
-            deactivate NotifService
         end
         
         Orchestrator --> Executor : Xong
@@ -114,28 +81,17 @@ loop cho mỗi job trong danh sách
         activate Orchestrator
         
         Orchestrator -> TargetRepo : findById(commentId)
-        activate TargetRepo
         TargetRepo --> Orchestrator : Comment data
-        deactivate TargetRepo
         
-        Orchestrator -> ModService : moderateText(comment.getContent())
-        activate ModService
+        Orchestrator -> ModService : moderateText(comment)
         ModService -> OpenAI : Gửi Text kiểm duyệt
         OpenAI --> ModService : Trả kết quả Text
         ModService --> Orchestrator : ModerationVerdict
-        deactivate ModService
-        Orchestrator -> JobRepo : Lưu ModerationResult vào DB
+        Orchestrator -> JobRepo : Lưu ModerationResult
         
-        opt Kết quả là BLOCK
+        opt Kết quả BLOCK
             Orchestrator -> NotifService : sendNotification(violatedComment)
-            activate NotifService
-            NotifService --> Orchestrator : OK
-            deactivate NotifService
-            
             Orchestrator -> TargetRepo : delete(comment)
-            activate TargetRepo
-            TargetRepo --> Orchestrator : Đã xóa từ Database
-            deactivate TargetRepo
         end
         
         Orchestrator --> Executor : Xong
@@ -143,20 +99,17 @@ loop cho mỗi job trong danh sách
     end
     
     Executor -> JobRepo : Đánh dấu trạng thái Job thành DONE
-    activate JobRepo
-    JobRepo --> Executor : OK
-    deactivate JobRepo
     
-    == Xử lý lỗi (Exception/Retryable) ==
-    opt Gặp Lỗi quá 3 lần gọi API
+    == Xử lý lỗi ==
+    opt Lỗi quá 3 lần gọi API
         Executor -> Executor : recover(Exception)
-        Executor -> JobRepo : Đổi trạng thái Job thành FAILED (hoặc về PENDING)
+        Executor -> JobRepo : Đổi trạng thái Job thành FAILED (hoặc PENDING)
     end
         
     deactivate Executor
     deactivate Executor
 end
 
-Scheduler --> Cron : Hoàn thành lượt chạy
+Scheduler --> Cron : Hoàn thành
 deactivate Scheduler
 @enduml
